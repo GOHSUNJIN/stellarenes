@@ -255,7 +255,7 @@ window.AppMethods = {
     const progressBarStyle={ height:'100%', borderRadius:'1px', background:'linear-gradient(90deg,#b69bff,#7c5cdc)', transition:'width .8s cubic-bezier(.2,.8,.2,1)', width:progressPct+'%' };
     const shareColor=active?active.color:'#c4a9ff';
     const shareCardStyle={ position:'relative', width:'min(88vw,420px)', borderRadius:'20px', overflow:'hidden', boxShadow:'0 40px 100px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)', '--share-c':shareColor };
-    const cardStyle={ position:'relative', width:'min(92vw,640px)', maxHeight:'82vh', overflowY:'auto', padding:'48px clamp(28px,6vw,56px) 36px', borderRadius:'22px', background:'linear-gradient(180deg,rgba(24,19,46,.96),rgba(12,10,26,.97))', border:'1px solid rgba(180,160,255,.16)', boxShadow:'0 30px 90px rgba(0,0,0,.6), 0 0 80px rgba(120,90,220,.18)', '--c':cardColor, animation:'cardIn .6s cubic-bezier(.2,.85,.25,1) both' };
+    const cardStyle={ position:'relative', width:'min(92vw,540px)', borderRadius:'22px', background:'linear-gradient(180deg,rgba(24,19,46,.97),rgba(12,10,26,.98))', border:'1px solid rgba(180,160,255,.16)', boxShadow:'0 30px 90px rgba(0,0,0,.6), 0 0 80px rgba(120,90,220,.18)', '--c':cardColor, animation:'cardIn .6s cubic-bezier(.2,.85,.25,1) both' };
 
     const bdayAwake=this.unlockedNotesFor(this.BDAY).length>0;
     const _all=[...this.DATA], _found=[];
