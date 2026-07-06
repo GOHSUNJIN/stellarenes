@@ -51,9 +51,12 @@ Object.assign(window.AppMethods, {
       this._ambGain.gain.setValueAtTime(0.0001, ac.currentTime);
       this._ambGain.gain.exponentialRampToValueAtTime(0.55, ac.currentTime + 4);
       this._amb = true;
-      this._audio.play().catch(() => { this._amb = null; });
+      // Only call play() if actually paused — avoids iOS restrictions on
+      // calling play() repeatedly on a Web Audio connected element
+      if (this._audio.paused) {
+        this._audio.play().catch(() => { this._amb = null; });
+      }
     };
-    // iOS: must wait for resume to fully resolve before calling play()
     if (ac.state === 'suspended') {
       ac.resume().then(doPlay).catch(() => {});
     } else {
@@ -67,7 +70,8 @@ Object.assign(window.AppMethods, {
     if (this._ambGain && this._actx) {
       try { this._ambGain.gain.cancelScheduledValues(0); this._ambGain.gain.setTargetAtTime(0.0001, this._actx.currentTime, 0.8); } catch(e) {}
     }
-    setTimeout(() => { try { if (this._audio) this._audio.pause(); } catch(e) {} }, 2000);
+    // Never pause the audio element — silencing via gain is enough.
+    // Pausing then re-playing a Web Audio connected element on iOS often fails silently.
   },
 
 });
