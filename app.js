@@ -231,6 +231,7 @@ Object.assign(window.AppMethods, {
       milestone: this.state.milestone,
       hasMilestone: !!this.state.milestone,
       muteLabel: this.state.muted ? 'Unmute music' : 'Mute music',
+      copyLabel: this.state.copied ? 'copied ✓' : 'copy',
       // Handlers
       clickCenter:    this.clickCenter,
       openPlaylist:   this.openPlaylist,

@@ -222,7 +222,7 @@
             <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;color:rgba(220,214,240,.4);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ active.codeLabel }}</span>
           </div>
           <div style="display:flex;gap:8px">
-            <button onClick="{{ copyShareText }}" style="flex:1;border:1px solid rgba(220,214,240,.18);background:transparent;color:rgba(238,234,250,.7);cursor:pointer;padding:10px 8px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;transition:background .2s,transform .2s" style-hover="background:rgba(220,214,240,.06)" style-active="transform:scale(.96)">copy</button>
+            <button onClick="{{ copyShareText }}" style="flex:1;border:1px solid rgba(220,214,240,.18);background:transparent;color:rgba(238,234,250,.7);cursor:pointer;padding:10px 8px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;transition:background .2s,transform .2s" style-hover="background:rgba(220,214,240,.06)" style-active="transform:scale(.96)">{{ copyLabel }}</button>
             <button onClick="{{ closeMessage }}" style="flex:1;border:1px solid rgba(220,214,240,.2);background:transparent;color:rgba(238,234,250,.8);cursor:pointer;padding:10px 8px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;transition:background .2s,transform .2s" style-hover="background:rgba(220,214,240,.08)" style-active="transform:scale(.96)">close</button>
           </div>
         </div>
@@ -270,7 +270,7 @@
 
       <!-- Actions — below card, won't appear in a screenshot crop -->
       <div onClick="{{ stop }}" style="display:flex;gap:12px;margin-top:22px">
-        <button onClick="{{ copyShareText }}" style="border:1px solid rgba(180,160,255,.24);background:rgba(255,255,255,.04);color:rgba(220,214,240,.72);cursor:pointer;padding:10px 26px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,border-color .2s" style-hover="background:rgba(255,255,255,.08);border-color:rgba(180,160,255,.55)">copy</button>
+        <button onClick="{{ copyShareText }}" style="border:1px solid rgba(180,160,255,.24);background:rgba(255,255,255,.04);color:rgba(220,214,240,.72);cursor:pointer;padding:10px 26px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,border-color .2s" style-hover="background:rgba(255,255,255,.08);border-color:rgba(180,160,255,.55)">{{ copyLabel }}</button>
         <button onClick="{{ closeShare }}" style="border:1px solid rgba(180,160,255,.24);background:rgba(255,255,255,.04);color:rgba(220,214,240,.72);cursor:pointer;padding:10px 26px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,border-color .2s" style-hover="background:rgba(255,255,255,.08);border-color:rgba(180,160,255,.55)">close</button>
       </div>
 
@@ -318,7 +318,8 @@ class Component extends DCLogic {
     milestone: '',
     isWide:    (typeof window !== 'undefined' && window.innerWidth >= 681),
     listOpen:  false,
-    shareOpen: false
+    shareOpen: false,
+    copied:    false
   };
 
   // ── Ref setters ──────────────────────────────────────────────────────
@@ -428,8 +429,8 @@ class Component extends DCLogic {
     const note=notes[idx]; if(!note) return;
     const txt=(e?e.title+'\n\n':'')+(note.text||'');
     navigator.clipboard.writeText(txt).then(()=>{
-      this.setState({shareOpen:false, hintMsg:'✦ copied to clipboard'});
-      clearTimeout(this._ch); this._ch=setTimeout(()=>this.setState({hintMsg:''}),2200);
+      this.setState({shareOpen:false, copied:true});
+      clearTimeout(this._ch); this._ch=setTimeout(()=>this.setState({copied:false}),1800);
     }).catch(()=>{});
   };
 
