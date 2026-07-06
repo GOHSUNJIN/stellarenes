@@ -23,19 +23,7 @@ window.AppMethods = {
   },
 
   // ── Supabase ─────────────────────────────────────────────────────────────
-  getDeviceId(){
-    if(this._did) return this._did;
-    let did='';
-    // Check localStorage first, then cookie (cookie survives a localStorage clear)
-    try{ did=localStorage.getItem('renes-device-id')||''; }catch(e){}
-    if(!did){ try{ const m=document.cookie.match(/(?:^|;\s*)renes-did=([^;]+)/); if(m) did=m[1]; }catch(e){} }
-    if(!did){
-      try{ did=crypto.randomUUID(); }catch(e){ did=(Math.random().toString(36)+Date.now().toString(36)).slice(0,20); }
-    }
-    try{ localStorage.setItem('renes-device-id',did); }catch(e){}
-    try{ const exp=new Date(); exp.setFullYear(exp.getFullYear()+2); document.cookie='renes-did='+did+';expires='+exp.toUTCString()+';path=/;SameSite=Lax'; }catch(e){}
-    this._did=did; return did;
-  },
+  getDeviceId(){ return 'renes'; },
   getSupabase(){
     if(this._sb) return this._sb;
     let url='', key='';
