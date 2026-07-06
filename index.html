@@ -11,6 +11,12 @@
 <meta property="og:type" content="website">
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<script>
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js');
+    navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
+  }
+</script>
 <script src="./data.js"></script>
 <script src="./app.js"></script>
 <script src="./config.js"></script>
