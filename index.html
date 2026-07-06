@@ -260,11 +260,11 @@
 class Component extends DCLogic {
 
   // ── Data (defined in data.js) ────────────────────────────────────────
-  DATA     = window.STARS.DATA;
-  BDAY     = window.STARS.BDAY;
-  EGG      = window.STARS.EGG;
-  PLAYLIST = window.STARS.PLAYLIST;
-  SPOTIFY  = window.STARS.SPOTIFY;
+  DATA     = window.STARS?.DATA     ?? [];
+  BDAY     = window.STARS?.BDAY     ?? {id:'birthday',title:'',when:'',color:'#ffd27a',codeLabel:'',notes:[]};
+  EGG      = window.STARS?.EGG      ?? {id:'egg',title:'',when:'',color:'#ff79b0',codeLabel:'',notes:[]};
+  PLAYLIST = window.STARS?.PLAYLIST ?? {id:'playlist',title:'',when:'',color:'#5fd38a',notes:[]};
+  SPOTIFY  = window.STARS?.SPOTIFY  ?? '';
 
   // ── Initial state ────────────────────────────────────────────────────
   state = {
