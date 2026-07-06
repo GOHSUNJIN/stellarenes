@@ -13,7 +13,12 @@
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <script>
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js');
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      // Force update check every time the app comes to the foreground
+      document.addEventListener('visibilitychange', () => {
+        if(document.visibilityState === 'visible') reg.update().catch(()=>{});
+      });
+    });
     navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
   }
   document.addEventListener('gesturestart', e => e.preventDefault());
