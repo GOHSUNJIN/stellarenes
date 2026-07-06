@@ -267,7 +267,6 @@ class Component extends DCLogic {
   state = {
     unlocked:  this.load(),   // localStorage cache; Supabase overrides on mount
     codeInput: '',
-    error:     false,
     active:    null,
     noteIndex: 0,
     hintMsg:   '',
@@ -354,10 +353,10 @@ class Component extends DCLogic {
     const v=(this.state.codeInput||'').trim().toLowerCase(); if(!v){ this._submitting=false; return; }
     let note=null, emo=null;
     for(const e of [...this.DATA,this.BDAY,this.EGG]){ const n=(e.notes||[]).find(x=>x.code&&x.code[0]!=='_'&&x.code.toLowerCase()===v); if(n){ note=n; emo=e; break; } }
-    if(!note){ return; }
+    if(!note){ this._submitting=false; return; }
     if(this.state.unlocked[note.code]){
       const un=this.unlockedNotesFor(emo); const idx=un.findIndex(n=>n.code===note.code);
-      this.setState({codeInput:'', error:false, hintMsg:'replaying this one, here it is again'});
+      this.setState({codeInput:'', hintMsg:'replaying this one, here it is again'});
       clearTimeout(this._sh); this._sh=setTimeout(()=>this.setState({hintMsg:''}),2400);
       if(this.inputEl) this.inputEl.blur();
       this.playUnlock(); if(emo.id==='egg'){ this.heartShower(); } else { setTimeout(()=>this.burstAt(emo.id),20); }
@@ -368,14 +367,14 @@ class Component extends DCLogic {
     if(emo.id==='egg'){
       this.save(unlocked);
       this.saveUnlockToSupabase(note.code, emo.id, emo.title);
-      this.setState({unlocked, codeInput:'', error:false, hintMsg:''}); if(this.inputEl) this.inputEl.blur(); this.playBirthday(); this.heartShower(); setTimeout(()=>this.setState({active:'egg', noteIndex:0}),700); return;
+      this.setState({unlocked, codeInput:'', hintMsg:''}); if(this.inputEl) this.inputEl.blur(); this.playBirthday(); this.heartShower(); setTimeout(()=>this.setState({active:'egg', noteIndex:0}),700); return;
     }
     const willBeAll=this.DATA.every(e=>(e.notes||[]).some(n=>unlocked[n.code]));
     if(willBeAll) unlocked['_complete']=true;
     this.save(unlocked);
     this.saveUnlockToSupabase(note.code, emo.id, emo.title);
     const newCount=this.DATA.filter(e=>(e.notes||[]).some(n=>unlocked[n.code])).length;
-    this.setState({unlocked, codeInput:'', error:false, hintMsg:''}); if(this.inputEl) this.inputEl.blur(); clearTimeout(this._idle);
+    this.setState({unlocked, codeInput:'', hintMsg:''}); if(this.inputEl) this.inputEl.blur(); clearTimeout(this._idle);
     if(emo.id==='birthday') this.playBirthday(); else this.playUnlock();
     setTimeout(()=>this.burstAt(emo.id), 40);
     if(willBeAll&&!this.state.finale){

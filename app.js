@@ -98,9 +98,9 @@ window.AppMethods = {
     const ac=this.initAudio(); if(!ac) return;
     if(ac.state==='suspended'){ try{ac.resume();}catch(e){} }
     if(!this._audio){
-      this._audio=new Audio('./music.mp3');
+      this._audio=new Audio();
       this._audio.loop=true;
-      try{ this._audio.crossOrigin='anonymous'; }catch(e){}
+      this._audio.src='./music.mp3';
     }
     if(!this._ambGain){
       try{
@@ -112,8 +112,8 @@ window.AppMethods = {
     try{ this._ambGain.gain.cancelScheduledValues(0); }catch(e){}
     this._ambGain.gain.setValueAtTime(0.0001,ac.currentTime);
     this._ambGain.gain.exponentialRampToValueAtTime(0.55,ac.currentTime+4);
-    this._audio.play().catch(()=>{});
     this._amb=true;
+    this._audio.play().catch(()=>{ this._amb=null; });
   },
   stopAmbient(){
     if(!this._amb) return; this._amb=null;
@@ -200,7 +200,6 @@ window.AppMethods = {
     window.removeEventListener('resize', this._onResize);
     window.removeEventListener('mousemove', this._onMove);
     if(this._onVisible) document.removeEventListener('visibilitychange',this._onVisible);
-    if(this._ambGesture){ window.removeEventListener('pointerdown',this._ambGesture); window.removeEventListener('keydown',this._ambGesture); }
     this.stopAmbient(); clearTimeout(this._idle); clearTimeout(this._mt); cancelAnimationFrame(this._raf);
     const sb=this.getSupabase();
     if(sb) sb.removeAllChannels();
@@ -266,8 +265,8 @@ window.AppMethods = {
       }
     }
 
-    const inputStyle={ width:'min(56vw,300px)', height:'52px', padding:'0 22px', borderRadius:'40px', background:'rgba(20,16,40,.6)', color:'#f0ecff', fontSize:'15px', letterSpacing:'.08em', textAlign:'center', outline:'none', border:'1px solid '+(this.state.error?'rgba(255,120,120,.8)':'rgba(180,160,255,.25)'), boxShadow:this.state.error?'0 0 24px rgba(255,90,90,.4)':'0 0 22px rgba(120,90,220,.12)', transition:'border-color .25s, box-shadow .25s' };
-    const barStyle={ display:'flex', gap:'10px', alignItems:'center', animation:this.state.error?'shake .55s':'none' };
+    const inputStyle={ width:'min(56vw,300px)', height:'52px', padding:'0 22px', borderRadius:'40px', background:'rgba(20,16,40,.6)', color:'#f0ecff', fontSize:'15px', letterSpacing:'.08em', textAlign:'center', outline:'none', border:'1px solid rgba(180,160,255,.25)', boxShadow:'0 0 22px rgba(120,90,220,.12)', transition:'border-color .25s, box-shadow .25s' };
+    const barStyle={ display:'flex', gap:'10px', alignItems:'center' };
     const cardColor=active?active.color:'#c4a9ff';
     const progressPct=total>0?Math.round(count/total*100):0;
     const progressBarStyle={ height:'100%', borderRadius:'1px', background:'linear-gradient(90deg,#b69bff,#7c5cdc)', transition:'width .8s cubic-bezier(.2,.8,.2,1)', width:progressPct+'%' };
