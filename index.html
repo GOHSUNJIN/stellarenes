@@ -102,13 +102,6 @@
     <div class="const-wrap">
       <div ref="{{ setContainer }}" class="constellation" style="position:relative;animation:fadeUp 1.5s ease both">
 
-        <!-- Connecting lines -->
-        <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <sc-for list="{{ lines }}" as="ln" hint-placeholder-count="20">
-            <line x1="{{ ln.x1 }}" y1="{{ ln.y1 }}" x2="{{ ln.x2 }}" y2="{{ ln.y2 }}" stroke-width="0.16" vector-effect="non-scaling-stroke" style="{{ ln.style }}"></line>
-          </sc-for>
-        </svg>
-
         <!-- Star orbs -->
         <sc-for list="{{ orbs }}" as="orb" hint-placeholder-count="20">
           <button data-orb="{{ orb.id }}" onClick="{{ orb.onClick }}" aria-label="{{ orb.aria }}" style="{{ orb.wrap }}" style-hover="{{ orb.hover }}">
@@ -324,6 +317,7 @@ class Component extends DCLogic {
       }
       ctx.restore();
     }
+    this.drawLines(ctx);
     this._shoot=(this._shoot||0)-1;
     if(!this.reduced&&this._shoot<=0&&Math.random()<.004){
       this.shoot={ x:Math.random()*w*.7, y:Math.random()*h*.4, vx:(7+Math.random()*5)*this.dpr, vy:(3+Math.random()*3)*this.dpr, life:1 };
