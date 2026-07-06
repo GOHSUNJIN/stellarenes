@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Stellarenes</title>
 <meta name="description" content="A constellation of twenty stars, each holding something personal. Type the word to wake it.">
 <meta name="theme-color" content="#0c0a1c">
@@ -16,6 +16,8 @@
     navigator.serviceWorker.register('./sw.js');
     navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
   }
+  document.addEventListener('gesturestart', e => e.preventDefault());
+  document.addEventListener('gesturechange', e => e.preventDefault());
 </script>
 <script src="./messages.js"></script>
 <script src="./data.js"></script>
@@ -292,6 +294,15 @@
     </div>
   </sc-if>
 
+  <!-- ── Landscape lock (mobile only) ───────────────────────────────────── -->
+  <sc-if value="{{ landscapeWarning }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#06060d;text-align:center;padding:40px;gap:20px">
+      <div style="font-size:48px;animation:spinSlow 3s linear infinite;display:inline-block">↻</div>
+      <div style="font-family:'Outfit',sans-serif;font-size:20px;font-weight:500;color:#f0ecff;letter-spacing:.04em">Rotate your phone</div>
+      <div style="font-family:'Instrument Serif',serif;font-style:italic;font-size:16px;color:rgba(196,169,255,.6)">this sky was made for portrait</div>
+    </div>
+  </sc-if>
+
 </div><!-- end background -->
 </x-dc>
 
@@ -319,7 +330,8 @@ class Component extends DCLogic {
     isWide:    (typeof window !== 'undefined' && window.innerWidth >= 681),
     listOpen:  false,
     shareOpen: false,
-    copied:    false
+    copied:           false,
+    landscapeWarning: false
   };
 
   // ── Ref setters ──────────────────────────────────────────────────────
@@ -389,7 +401,7 @@ class Component extends DCLogic {
 
   // Intro dismissal — no localStorage tracking, so intro plays every visit
   dismissIntro = () => {
-    this.initAudio(); this.startAmbient(); this.requestGyroscope();
+    this.initAudio(); this.startAmbient();
     const el=this.introEl;
     const done=()=>{ if(this._introClosing){ this._introClosing=false; this.setState({showIntro:false}, ()=>{ if(this.inputEl&&!('ontouchstart' in window)) this.inputEl.focus(); this.armIdle(); }); } };
     if(this._introClosing) return;

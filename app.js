@@ -40,10 +40,15 @@ Object.assign(window.AppMethods, {
     try { document.title = 'Stellarenes ✦'; } catch(e) {}
     try { this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e) { this.reduced = false; }
 
+    const _isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     this._onResize = () => {
       this.sizeCanvas();
       const wide = window.innerWidth >= 681;
       if (wide !== this.state.isWide) this.setState({ isWide: wide });
+      if (_isTouch) {
+        const lnd = window.innerWidth > window.innerHeight;
+        if (lnd !== this.state.landscapeWarning) this.setState({ landscapeWarning: lnd });
+      }
     };
     this._onMove = (e) => {
       const w = window.innerWidth || 1, h = window.innerHeight || 1;
@@ -72,6 +77,7 @@ Object.assign(window.AppMethods, {
         typeof DeviceOrientationEvent.requestPermission !== 'function') {
       window.addEventListener('deviceorientation', this._onOrient);
     }
+    if (_isTouch && window.innerWidth > window.innerHeight) this.setState({ landscapeWarning: true });
     this.syncFromSupabase();
     this.subscribeToRealtime();
   },
@@ -231,7 +237,8 @@ Object.assign(window.AppMethods, {
       milestone: this.state.milestone,
       hasMilestone: !!this.state.milestone,
       muteLabel: this.state.muted ? 'Unmute music' : 'Mute music',
-      copyLabel: this.state.copied ? 'copied ✓' : 'copy',
+      copyLabel:        this.state.copied ? 'copied ✓' : 'copy',
+      landscapeWarning: this.state.landscapeWarning,
       // Handlers
       clickCenter:    this.clickCenter,
       openPlaylist:   this.openPlaylist,
