@@ -64,6 +64,9 @@
       <h1 class="ah-title" style="font-family:'Parisienne',cursive;font-weight:400;font-size:clamp(58px,10vw,108px);line-height:1;margin:2px 0 0;color:#f3eeff;letter-spacing:.01em;text-shadow:0 0 38px rgba(160,120,255,.4)">Renes</h1>
       <p class="ah-sub" style="font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(17px,2.2vw,22px);color:rgba(220,214,240,.66);margin-top:6px;max-width:38ch;margin-left:auto;margin-right:auto;text-wrap:balance">One star for every feeling. Type its word to wake it, or tap any star to find it.</p>
       <div class="ah-count" style="margin-top:12px;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:rgba(196,169,255,.55)"><span style="color:#e9ddff;font-weight:500">{{ count }}</span> of {{ total }} stars awake</div>
+      <div style="margin-top:8px;width:min(180px,45vw);height:2px;border-radius:1px;background:rgba(196,169,255,.12);overflow:hidden;margin-left:auto;margin-right:auto">
+        <div style="{{ progressBarStyle }}"></div>
+      </div>
     </header>
 
     <!-- Birthday + playlist row -->
@@ -202,6 +205,7 @@
           <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.06em;color:rgba(220,214,240,.4)">{{ active.foundOn }}</span>
           <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(220,214,240,.18))"></div>
           <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;color:rgba(220,214,240,.5)">{{ active.codeLabel }}</span>
+          <button onClick="{{ openShare }}" style="border:1px solid rgba(220,214,240,.18);background:transparent;color:rgba(238,234,250,.7);cursor:pointer;padding:8px 18px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;transition:background .2s,transform .2s" style-hover="background:rgba(220,214,240,.06)" style-active="transform:scale(.96)">save this &#8599;</button>
           <button onClick="{{ closeMessage }}" style="border:1px solid rgba(220,214,240,.2);background:transparent;color:rgba(238,234,250,.8);cursor:pointer;padding:8px 18px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;transition:background .2s,transform .2s" style-hover="background:rgba(220,214,240,.08)" style-active="transform:scale(.96)">close</button>
         </div>
       </div>
@@ -212,6 +216,22 @@
   <sc-if value="{{ hasMilestone }}" hint-placeholder-val="{{ false }}">
     <div style="position:fixed;top:0;left:0;right:0;z-index:25;display:flex;justify-content:center;pointer-events:none;padding-top:88px">
       <div style="padding:13px 26px;border-radius:40px;background:rgba(22,17,42,.82);backdrop-filter:blur(10px);border:1px solid rgba(196,169,255,.3);box-shadow:0 12px 40px rgba(0,0,0,.4);font-family:'Instrument Serif',serif;font-style:italic;font-size:18px;color:#efeaff;animation:toastIn .6s cubic-bezier(.2,.8,.2,1) both">{{ milestone }}</div>
+    </div>
+  </sc-if>
+
+  <!-- ── Share / screenshot card ──────────────────────────────────────── -->
+  <sc-if value="{{ shareOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeShare }}" style="position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:32px;background:rgba(6,6,13,.88);backdrop-filter:blur(18px);animation:backdropIn .4s ease both">
+      <div onClick="{{ stop }}" style="{{ shareCardStyle }}">
+        <span style="position:absolute;left:50%;top:-28px;transform:translateX(-50%);width:52px;height:52px;border-radius:50%;background:var(--share-c);box-shadow:0 0 40px var(--share-c),0 0 80px var(--share-c);animation:breathe 3.6s ease-in-out infinite"></span>
+        <div style="font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--share-c);opacity:.9;margin-bottom:10px">{{ active.when }}</div>
+        <h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(26px,4.5vw,38px);line-height:1.08;color:#f4f0ff;margin-bottom:24px;text-shadow:0 0 26px var(--share-c)">{{ active.title }}</h2>
+        <sc-for list="{{ active.lines }}" as="line" hint-placeholder-count="3">
+          <p style="margin:0 0 14px;font-family:'Instrument Serif',serif;font-size:clamp(16px,2.2vw,20px);line-height:1.6;color:rgba(238,234,250,.88)">{{ line.text }}</p>
+        </sc-for>
+        <div style="margin-top:28px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(196,169,255,.4)">&#10022; stellarenes</div>
+        <button onClick="{{ closeShare }}" style="margin-top:18px;border:1px solid rgba(220,214,240,.18);background:transparent;color:rgba(238,234,250,.65);cursor:pointer;padding:8px 22px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;transition:background .2s" style-hover="background:rgba(220,214,240,.07)">done</button>
+      </div>
     </div>
   </sc-if>
 
@@ -256,7 +276,8 @@ class Component extends DCLogic {
     showIntro: true,          // always plays on every visit
     milestone: '',
     isWide:    (typeof window !== 'undefined' && window.innerWidth >= 681),
-    listOpen:  false
+    listOpen:  false,
+    shareOpen: false
   };
 
   // ── Ref setters ──────────────────────────────────────────────────────
@@ -324,15 +345,19 @@ class Component extends DCLogic {
 
   toggleList = () => this.setState(s=>({listOpen:!s.listOpen}));
 
+  openShare  = () => this.setState({shareOpen:true});
+  closeShare = () => this.setState({shareOpen:false});
+
   submit = () => {
     const v=(this.state.codeInput||'').trim().toLowerCase(); if(!v) return;
     let note=null, emo=null;
     for(const e of [...this.DATA,this.BDAY,this.EGG]){ const n=(e.notes||[]).find(x=>x.code&&x.code[0]!=='_'&&x.code.toLowerCase()===v); if(n){ note=n; emo=e; break; } }
-    if(!note){ this.setState({error:true, hintMsg:'no message answers to that word, try another'}); clearTimeout(this._sh); this._sh=setTimeout(()=>this.setState({error:false}),650); return; }
+    if(!note){ return; }
     if(this.state.unlocked[note.code]){
       const un=this.unlockedNotesFor(emo); const idx=un.findIndex(n=>n.code===note.code);
       this.setState({codeInput:'', error:false, hintMsg:'replaying this one, here it is again'});
       clearTimeout(this._sh); this._sh=setTimeout(()=>this.setState({hintMsg:''}),2400);
+      if(this.inputEl) this.inputEl.blur();
       this.playUnlock(); if(emo.id==='egg'){ this.heartShower(); } else { setTimeout(()=>this.burstAt(emo.id),20); }
       setTimeout(()=>this.setState({active:emo.id, noteIndex:idx<0?0:idx}),440); return;
     }
@@ -341,19 +366,21 @@ class Component extends DCLogic {
     if(emo.id==='egg'){
       this.save(unlocked);
       this.saveUnlockToSupabase(note.code, emo.id, emo.title);
-      this.setState({unlocked, codeInput:'', error:false, hintMsg:''}); this.playBirthday(); this.heartShower(); setTimeout(()=>this.setState({active:'egg', noteIndex:0}),700); return;
+      this.setState({unlocked, codeInput:'', error:false, hintMsg:''}); if(this.inputEl) this.inputEl.blur(); this.playBirthday(); this.heartShower(); setTimeout(()=>this.setState({active:'egg', noteIndex:0}),700); return;
     }
     const willBeAll=this.DATA.every(e=>(e.notes||[]).some(n=>unlocked[n.code]));
     if(willBeAll) unlocked['_complete']=true;
     this.save(unlocked);
     this.saveUnlockToSupabase(note.code, emo.id, emo.title);
     const newCount=this.DATA.filter(e=>(e.notes||[]).some(n=>unlocked[n.code])).length;
-    this.setState({unlocked, codeInput:'', error:false, hintMsg:''}); clearTimeout(this._idle);
+    this.setState({unlocked, codeInput:'', error:false, hintMsg:''}); if(this.inputEl) this.inputEl.blur(); clearTimeout(this._idle);
     if(emo.id==='birthday') this.playBirthday(); else this.playUnlock();
     setTimeout(()=>this.burstAt(emo.id), 40);
     if(willBeAll&&!this.state.finale){
       this.setState({finale:true});
       setTimeout(()=>{ this.celebrate(); this.playBirthday(); this.burstAt('birthday'); }, 1100);
+      setTimeout(()=>{ this.heartShower(); }, 2400);
+      setTimeout(()=>{ this.celebrate(); }, 3700);
       const bnotes=this.BDAY.notes.filter(n=>unlocked[n.code]); const bidx=bnotes.findIndex(n=>n.code==='_complete');
       setTimeout(()=>this.setState({active:'birthday', noteIndex:bidx<0?0:bidx}), 1750);
     } else {
@@ -375,7 +402,7 @@ class Component extends DCLogic {
   openBday     = () => this.setState({active:'birthday', noteIndex:0});
   openPlaylist = () => this.setState({active:'playlist', noteIndex:0});
   openEgg      = () => this.setState({active:'egg', noteIndex:0});
-  closeMessage = () => this.setState({active:null});
+  closeMessage = () => this.setState({active:null, shareOpen:false});
 
   nextNote    = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n) this.setState(s=>({noteIndex:(s.noteIndex+1)%n})); };
   prevNote    = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n) this.setState(s=>({noteIndex:(s.noteIndex-1+n)%n})); };

@@ -25,9 +25,10 @@ window.AppMethods = {
   // ── Supabase ─────────────────────────────────────────────────────────────
   getSupabase(){
     if(this._sb) return this._sb;
-    if(!window.supabase||!window.SUPABASE_URL||!window.SUPABASE_KEY||
-       window.SUPABASE_URL.includes('your-project')) return null;
-    this._sb=window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+    let url='', key='';
+    try{ url=typeof SUPABASE_URL!=='undefined'?SUPABASE_URL:''; key=typeof SUPABASE_KEY!=='undefined'?SUPABASE_KEY:''; }catch(e){}
+    if(!window.supabase||!url||!key||url.includes('your-project')) return null;
+    this._sb=window.supabase.createClient(url, key);
     return this._sb;
   },
   syncFromSupabase(){
@@ -235,8 +236,8 @@ window.AppMethods = {
     const orbs=this.DATA.map((e,i)=>{
       const found=this.unlockedNotesFor(e).length, unlocked=found>0;
       return { id:e.id, title:e.title, unlocked, locked:!unlocked, found, foundLabel:found>1?(found+' messages'):'', aria:unlocked?e.title:'a locked star',
-        wrap:{ position:'absolute', left:P[i].x+'%', top:P[i].y+'%', width:'52px', height:'52px', background:'transparent', border:0, padding:0, cursor:'pointer', '--c':e.color, '--lblo':'0', zIndex:1, transition:'filter .35s ease', animation:'orbIn .9s cubic-bezier(.2,.8,.2,1) both', animationDelay:(i*.05)+'s' },
-        hover:{ '--lblo':'1', zIndex:6, filter:'brightness(1.35)' },
+        wrap:{ position:'absolute', left:P[i].x+'%', top:P[i].y+'%', width:'52px', height:'52px', background:'transparent', border:0, padding:0, cursor:'pointer', '--c':e.color, '--lblo':'0', zIndex:1, transition:'filter .35s ease, transform .2s ease', animation:'orbIn .9s cubic-bezier(.2,.8,.2,1) both', animationDelay:(i*.05)+'s' },
+        hover: unlocked ? { '--lblo':'1', zIndex:6, filter:'brightness(1.4)', transform:'scale(1.08)' } : { '--lblo':'1', zIndex:6, filter:'brightness(1.35)' },
         onClick:()=>this.clickOrb({id:e.id,unlocked,title:e.title}) };
     });
     const lines=this.DATA.map((e,i)=>{
@@ -268,6 +269,10 @@ window.AppMethods = {
     const inputStyle={ width:'min(56vw,300px)', height:'52px', padding:'0 22px', borderRadius:'40px', background:'rgba(20,16,40,.6)', color:'#f0ecff', fontSize:'15px', letterSpacing:'.08em', textAlign:'center', outline:'none', border:'1px solid '+(this.state.error?'rgba(255,120,120,.8)':'rgba(180,160,255,.25)'), boxShadow:this.state.error?'0 0 24px rgba(255,90,90,.4)':'0 0 22px rgba(120,90,220,.12)', transition:'border-color .25s, box-shadow .25s' };
     const barStyle={ display:'flex', gap:'10px', alignItems:'center', animation:this.state.error?'shake .55s':'none' };
     const cardColor=active?active.color:'#c4a9ff';
+    const progressPct=total>0?Math.round(count/total*100):0;
+    const progressBarStyle={ height:'100%', borderRadius:'1px', background:'linear-gradient(90deg,#b69bff,#7c5cdc)', transition:'width .8s cubic-bezier(.2,.8,.2,1)', width:progressPct+'%' };
+    const shareColor=active?active.color:'#c4a9ff';
+    const shareCardStyle={ position:'relative', width:'min(88vw,420px)', padding:'56px clamp(28px,6vw,48px) 44px', borderRadius:'28px', background:'linear-gradient(160deg,rgba(22,17,42,.98),rgba(10,8,22,.99))', border:'1px solid rgba(180,160,255,.18)', boxShadow:'0 40px 100px rgba(0,0,0,.7)', textAlign:'center', '--share-c':shareColor };
     const cardStyle={ position:'relative', width:'min(92vw,640px)', maxHeight:'82vh', overflowY:'auto', padding:'48px clamp(28px,6vw,56px) 36px', borderRadius:'22px', background:'linear-gradient(180deg,rgba(24,19,46,.96),rgba(12,10,26,.97))', border:'1px solid rgba(180,160,255,.16)', boxShadow:'0 30px 90px rgba(0,0,0,.6), 0 0 80px rgba(120,90,220,.18)', '--c':cardColor, animation:'cardIn .6s cubic-bezier(.2,.85,.25,1) both' };
 
     const bdayAwake=this.unlockedNotesFor(this.BDAY).length>0;
@@ -283,7 +288,7 @@ window.AppMethods = {
         onClick:()=>this.setState({active:f.e.id, noteIndex:idx<0?0:idx, listOpen:false}) };
     });
     const eggFound=!!this.state.unlocked['forever'];
-    return { count, total, foundTotal, orbs, lines, showCenter:bdayAwake, centerLocked:!bdayAwake, clickCenter:this.clickCenter, showPlaylist:(count>=total), openPlaylist:this.openPlaylist, showEgg:eggFound, openEgg:this.openEgg, foundList, hasFound:foundList.length>0, foundCount:foundList.length, listOpen:this.state.listOpen, toggleList:this.toggleList, modalOpen:!!active, active, openBday:this.openBday, closeMessage:this.closeMessage, stop:this.stop, submit:this.submit, onInput:this.onInput, onKey:this.onKey, setCanvas:this.setCanvas, setContainer:this.setContainer, setInput:this.setInput, setIntro:this.setIntro, codeInput:this.state.codeInput, hintMsg:this.state.hintMsg, muted:this.state.muted, soundOn:!this.state.muted, toggleMute:this.toggleMute, showIntro:this.state.showIntro, dismissIntro:this.dismissIntro, milestone:this.state.milestone, hasMilestone:!!this.state.milestone, inputStyle, barStyle, cardStyle };
+    return { count, total, foundTotal, orbs, lines, showCenter:bdayAwake, centerLocked:!bdayAwake, clickCenter:this.clickCenter, showPlaylist:(count>=total), openPlaylist:this.openPlaylist, showEgg:eggFound, openEgg:this.openEgg, foundList, hasFound:foundList.length>0, foundCount:foundList.length, listOpen:this.state.listOpen, toggleList:this.toggleList, modalOpen:!!active, active, openBday:this.openBday, closeMessage:this.closeMessage, stop:this.stop, submit:this.submit, onInput:this.onInput, onKey:this.onKey, setCanvas:this.setCanvas, setContainer:this.setContainer, setInput:this.setInput, setIntro:this.setIntro, codeInput:this.state.codeInput, hintMsg:this.state.hintMsg, muted:this.state.muted, soundOn:!this.state.muted, toggleMute:this.toggleMute, showIntro:this.state.showIntro, dismissIntro:this.dismissIntro, milestone:this.state.milestone, hasMilestone:!!this.state.milestone, inputStyle, barStyle, cardStyle, shareOpen:this.state.shareOpen&&!!active, openShare:this.openShare, closeShare:this.closeShare, progressBarStyle, shareCardStyle };
   }
 
 };
