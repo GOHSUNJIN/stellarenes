@@ -460,7 +460,7 @@ class Component extends DCLogic {
 
   clickCenter = () => {
     if(this.unlockedNotesFor(this.BDAY).length>0){ this.setState({active:'birthday', noteIndex:0}); }
-    else { this.setState({hintMsg:'this is your birthday star, it opens with the word I gave you for today'}); if(this.inputEl) this.inputEl.focus(); clearTimeout(this._hk); this._hk=setTimeout(()=>this.setState({hintMsg:''}),3200); }
+    else { this.setState({hintMsg:'this is your birthday star, it opens with the word I gave you for today'}); if(this.inputEl&&!navigator.maxTouchPoints) this.inputEl.focus(); clearTimeout(this._hk); this._hk=setTimeout(()=>this.setState({hintMsg:''}),3200); }
   };
 
   openBday     = () => this.setState({active:'birthday', noteIndex:0});
