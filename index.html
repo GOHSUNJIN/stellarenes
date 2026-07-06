@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stellarenes</title>
+<script src="./support.js"></script>
+<script src="./data.js"></script>
+<script src="./app.js"></script>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0c0a1c"/><path d="M50 24l5.6 13.2 14.3 1.2-10.9 9.4 3.4 14L50 47.8 37.6 51.2l3.4-14-10.9-9.4 14.3-1.2z" fill="#ffd27a"/><circle cx="24" cy="30" r="1.6" fill="#fff"/><circle cx="76" cy="66" r="1.6" fill="#fff"/><circle cx="30" cy="74" r="1.4" fill="#c4a9ff"/><circle cx="70" cy="22" r="1.4" fill="#c4a9ff"/></svg>
+</template>
+
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600&family=Parisienne&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%230c0a1c'/><path d='M16 5l2.9 6.9 7.5.6-5.7 4.9 1.8 7.3L16 21.8 9.5 24.7l1.8-7.3-5.7-4.9 7.5-.6z' fill='%23ffd27a'/></svg>">
+</helmet>
+
+<!-- ── Background ──────────────────────────────────────────────────────── -->
+<div style="position:fixed;inset:0;background:radial-gradient(ellipse 120% 90% at 28% 18%,#1c1638 0%,#0c0a1c 46%,#06060d 100%);overflow:hidden">
+
+  <div style="position:absolute;width:60vw;height:60vw;left:-12vw;top:-18vw;border-radius:50%;background:radial-gradient(circle,rgba(124,92,220,.22),transparent 65%);filter:blur(40px);animation:floatNeb 26s ease-in-out infinite;pointer-events:none"></div>
+  <div style="position:absolute;width:55vw;height:55vw;right:-15vw;bottom:-20vw;border-radius:50%;background:radial-gradient(circle,rgba(60,120,220,.18),transparent 65%);filter:blur(46px);animation:floatNeb 32s ease-in-out infinite reverse;pointer-events:none"></div>
+  <div style="position:absolute;width:36vw;height:36vw;right:18vw;top:8vw;border-radius:50%;background:radial-gradient(circle,rgba(220,120,190,.12),transparent 65%);filter:blur(50px);animation:floatNeb 38s ease-in-out infinite;pointer-events:none"></div>
+
+  <canvas ref="{{ setCanvas }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+
+  <!-- Archive button -->
+  <sc-if value="{{ hasFound }}" hint-placeholder-val="{{ false }}">
+    <button onClick="{{ toggleList }}" style="position:absolute;top:16px;left:18px;z-index:7;display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(180,160,255,.25);background:rgba(20,16,40,.5);color:rgba(228,222,246,.85);cursor:pointer;padding:8px 17px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12.5px;letter-spacing:.04em;transition:border-color .2s,color .2s,background .2s" style-hover="border-color:rgba(180,160,255,.55);color:#fff;background:rgba(255,255,255,.05)"><span style="color:#c4a9ff">&#10022;</span> your archive<span style="font-family:'Space Mono',monospace;font-size:11px;color:rgba(196,169,255,.7)">{{ foundCount }}</span></button>
+  </sc-if>
+
+  <!-- Dev toolbar (visible when devMode() returns true) -->
+  <sc-if value="{{ dev }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;bottom:16px;left:18px;z-index:6;display:flex;gap:8px">
+    <button onClick="{{ resetAll }}"   title="Reset all unlocks" style="border:1px solid rgba(220,214,240,.16);background:rgba(20,16,40,.5);color:rgba(220,214,240,.6);cursor:pointer;padding:7px 14px;border-radius:30px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;transition:border-color .2s,color .2s" style-hover="border-color:rgba(255,160,160,.6);color:#ffb3b3">reset</button>
+    <button onClick="{{ replayIntro }}" title="Show intro again"   style="border:1px solid rgba(180,160,255,.2);background:rgba(20,16,40,.5);color:rgba(220,214,240,.6);cursor:pointer;padding:7px 14px;border-radius:30px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;transition:border-color .2s,color .2s" style-hover="border-color:rgba(180,160,255,.5);color:#efeaff">intro</button>
+    <button onClick="{{ lightAll }}"   title="Light all 20 stars"  style="border:1px solid rgba(255,210,122,.3);background:rgba(20,16,40,.5);color:rgba(255,225,170,.7);cursor:pointer;padding:7px 14px;border-radius:30px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;transition:border-color .2s,color .2s" style-hover="border-color:rgba(255,210,122,.7);color:#ffe6ad">light all</button>
+  </div>
+  </sc-if>
+
+  <!-- Top-right controls: egg + sound toggle -->
+  <div style="position:absolute;top:16px;right:18px;z-index:6;display:flex;align-items:center;gap:8px">
+    <sc-if value="{{ showEgg }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ openEgg }}" aria-label="A secret you found" title="a secret you found" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid rgba(255,121,176,.4);background:rgba(20,16,40,.5);color:#ff9ecb;cursor:pointer;border-radius:50%;font-size:15px;box-shadow:0 0 14px rgba(255,121,176,.35);animation:breathe 3.6s ease-in-out infinite;transition:border-color .2s,color .2s" style-hover="border-color:rgba(255,121,176,.8);color:#ffd1e6">&#9825;</button>
+    </sc-if>
+    <button onClick="{{ toggleMute }}" aria-label="Toggle sound" title="our song: Soft Spot" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid rgba(180,160,255,.2);background:rgba(20,16,40,.5);color:rgba(220,214,240,.75);cursor:pointer;border-radius:50%;font-size:15px;transition:border-color .2s,color .2s" style-hover="border-color:rgba(180,160,255,.5);color:#efeaff">
+      <sc-if value="{{ soundOn }}" hint-placeholder-val="{{ true }}"><span>&#128266;</span></sc-if>
+      <sc-if value="{{ muted }}"   hint-placeholder-val="{{ false }}"><span>&#128263;</span></sc-if>
+    </button>
+  </div>
+
+  <!-- ── Main layout column ───────────────────────────────────────────── -->
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;z-index:2">
+
+    <!-- Header -->
+    <header class="app-header" style="text-align:center;padding-left:24px;padding-right:24px;padding-bottom:6px;animation:fadeUp 1.1s ease both">
+      <div class="ah-eyebrow" style="font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:rgba(196,169,255,.6);font-weight:400">A constellation for</div>
+      <h1 class="ah-title" style="font-family:'Parisienne',cursive;font-weight:400;font-size:clamp(58px,10vw,108px);line-height:1;margin:2px 0 0;color:#f3eeff;letter-spacing:.01em;text-shadow:0 0 38px rgba(160,120,255,.4)">Renes</h1>
+      <p class="ah-sub" style="font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(17px,2.2vw,22px);color:rgba(220,214,240,.66);margin-top:6px;max-width:38ch;margin-left:auto;margin-right:auto;text-wrap:balance">One star for every feeling. Type its word to wake it, or tap any star to find it.</p>
+      <div class="ah-count" style="margin-top:12px;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:rgba(196,169,255,.55)"><span style="color:#e9ddff;font-weight:500">{{ count }}</span> of {{ total }} stars awake</div>
+    </header>
+
+    <!-- Birthday + playlist row -->
+    <div class="bday-row" style="display:flex;justify-content:center;align-items:flex-start;gap:48px;flex-shrink:0;padding-top:2px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <button onClick="{{ clickCenter }}" data-orb="birthday" aria-label="Birthday message" style="position:relative;width:60px;height:60px;background:transparent;border:0;cursor:pointer;padding:0;animation:popIn .8s cubic-bezier(.2,.8,.2,1) both;animation-delay:.9s">
+          <sc-if value="{{ centerLocked }}" hint-placeholder-val="{{ true }}">
+            <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:radial-gradient(circle,rgba(255,210,122,.16),transparent 68%);filter:blur(5px);animation:haloPulse 6s ease-in-out infinite"></span>
+            <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;border:1px dashed rgba(255,210,122,.4)"></span>
+            <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;background:rgba(255,225,170,.6);box-shadow:0 0 10px rgba(255,210,122,.5)"></span>
+          </sc-if>
+          <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:96px;border-radius:50%;background:radial-gradient(circle,rgba(255,210,122,.5),transparent 68%);filter:blur(9px);animation:haloPulse 4s ease-in-out infinite"></span>
+            <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,210,122,.4);animation:spinSlow 16s linear infinite"></span>
+            <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;background:#ffd27a;box-shadow:0 0 26px #ffd27a,0 0 56px #ffb347;animation:breathe 3.4s ease-in-out infinite"></span>
+          </sc-if>
+        </button>
+        <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:14px;color:#fff4dd;text-shadow:0 0 14px rgba(255,210,122,.55);animation:labelGlow 3s ease-in-out infinite">for your birthday</span>
+      </div>
+      <sc-if value="{{ showPlaylist }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;animation:popIn 1s cubic-bezier(.2,.8,.2,1) both">
+          <button onClick="{{ openPlaylist }}" data-orb="playlist" aria-label="A secret for you" style="position:relative;width:60px;height:60px;background:transparent;border:0;cursor:pointer;padding:0">
+            <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:50%;background:radial-gradient(circle,rgba(95,211,138,.5),transparent 68%);filter:blur(8px);animation:haloPulse 4s ease-in-out infinite"></span>
+            <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;border:1px solid rgba(95,211,138,.45);animation:spinSlow 14s linear infinite"></span>
+            <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:#5fd38a;box-shadow:0 0 24px #5fd38a,0 0 50px #36b36a;display:flex;align-items:center;justify-content:center;font-size:15px;color:#06140c;animation:breathe 3.4s ease-in-out infinite">&#9834;</span>
+          </button>
+          <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:14px;color:#dffbe9;text-shadow:0 0 14px rgba(95,211,138,.6);animation:labelGlow 2.6s ease-in-out infinite">a secret, for you</span>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- Constellation canvas area -->
+    <div class="const-wrap">
+      <div ref="{{ setContainer }}" class="constellation" style="position:relative;animation:fadeUp 1.5s ease both">
+
+        <!-- Connecting lines -->
+        <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <sc-for list="{{ lines }}" as="ln" hint-placeholder-count="20">
+            <line x1="{{ ln.x1 }}" y1="{{ ln.y1 }}" x2="{{ ln.x2 }}" y2="{{ ln.y2 }}" stroke-width="0.16" vector-effect="non-scaling-stroke" style="{{ ln.style }}"></line>
+          </sc-for>
+        </svg>
+
+        <!-- Star orbs -->
+        <sc-for list="{{ orbs }}" as="orb" hint-placeholder-count="20">
+          <button data-orb="{{ orb.id }}" onClick="{{ orb.onClick }}" aria-label="{{ orb.aria }}" style="{{ orb.wrap }}" style-hover="{{ orb.hover }}">
+            <sc-if value="{{ orb.locked }}" hint-placeholder-val="{{ true }}">
+              <span class="o-twk"  style="position:absolute;left:50%;top:50%;border-radius:50%;background:rgba(230,225,250,.7);box-shadow:0 0 10px rgba(200,190,255,.6);animation:twinkle 4s ease-in-out infinite"></span>
+              <span class="o-lring" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(200,190,255,.12)"></span>
+              <span style="position:absolute;left:50%;top:calc(50% + 20px);transform:translateX(-50%);white-space:nowrap;font-family:'Instrument Serif',serif;font-style:italic;font-size:14px;color:rgba(238,234,250,.82);text-shadow:0 2px 9px rgba(0,0,0,.85);opacity:var(--lblo,0);transition:opacity .25s">{{ orb.title }}</span>
+            </sc-if>
+            <sc-if value="{{ orb.unlocked }}" hint-placeholder-val="{{ false }}">
+              <span class="o-halo" style="position:absolute;left:50%;top:50%;border-radius:50%;background:radial-gradient(circle,var(--c),transparent 68%);filter:blur(8px);animation:haloPulse 5s ease-in-out infinite"></span>
+              <span class="o-ring" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid var(--c);opacity:.45"></span>
+              <span class="o-core" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:var(--c);box-shadow:0 0 20px var(--c),0 0 40px var(--c);animation:breathe 4.2s ease-in-out infinite"></span>
+              <span style="position:absolute;left:50%;top:calc(50% + 24px);transform:translateX(-50%);white-space:nowrap;font-family:'Instrument Serif',serif;font-style:italic;font-size:16px;color:#efeaff;text-shadow:0 0 14px var(--c),0 2px 8px rgba(0,0,0,.7);opacity:var(--lblo,0);transition:opacity .25s">{{ orb.title }}</span>
+              <span style="position:absolute;left:50%;top:calc(50% + 44px);transform:translateX(-50%);white-space:nowrap;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:rgba(220,214,240,.55);opacity:var(--lblo,0);transition:opacity .25s">{{ orb.foundLabel }}</span>
+            </sc-if>
+          </button>
+        </sc-for>
+
+      </div>
+    </div>
+
+    <!-- Footer: input bar -->
+    <footer class="gift-footer" style="padding:4px 24px 30px;display:flex;flex-direction:column;align-items:center;gap:10px;animation:fadeUp 1.3s ease both">
+      <div style="height:40px;display:flex;align-items:center;justify-content:center;max-width:92vw;text-align:center;font-family:'Instrument Serif',serif;font-style:italic;font-size:16px;line-height:1.3;color:rgba(255,180,180,.85);transition:opacity .3s">{{ hintMsg }}</div>
+      <div style="{{ barStyle }}">
+        <input value="{{ codeInput }}" onInput="{{ onInput }}" onKeyDown="{{ onKey }}" ref="{{ setInput }}" placeholder="type a word…" style="{{ inputStyle }}" />
+        <button onClick="{{ submit }}" style="flex-shrink:0;white-space:nowrap;border:0;cursor:pointer;padding:0 22px;height:52px;border-radius:40px;background:linear-gradient(135deg,#b69bff,#7c5cdc);color:#0c0a1c;font-family:'Outfit',sans-serif;font-weight:500;font-size:13px;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 0 26px rgba(150,110,255,.45);transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-2px);box-shadow:0 0 38px rgba(150,110,255,.7)" style-active="transform:scale(.96)">Light it up</button>
+      </div>
+      <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;color:rgba(196,169,255,.4)">these stars wake to the words you were given</div>
+    </footer>
+
+  </div><!-- end main column -->
+
+  <!-- ── Archive modal ─────────────────────────────────────────────────── -->
+  <sc-if value="{{ listOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ toggleList }}" style="position:fixed;inset:0;z-index:22;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,6,13,.74);backdrop-filter:blur(10px);animation:backdropIn .4s ease both">
+      <div onClick="{{ stop }}" class="nobar" style="position:relative;width:min(92vw,540px);max-height:80vh;overflow-y:auto;padding:34px clamp(24px,5vw,40px) 30px;border-radius:22px;background:linear-gradient(180deg,rgba(24,19,46,.97),rgba(12,10,26,.98));border:1px solid rgba(180,160,255,.16);box-shadow:0 30px 90px rgba(0,0,0,.6),0 0 80px rgba(120,90,220,.16);animation:cardIn .5s cubic-bezier(.2,.85,.25,1) both">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px">
+          <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(24px,4vw,32px);color:#f4f0ff">Words you've found</span>
+          <button onClick="{{ toggleList }}" aria-label="Close" style="border:0;background:transparent;color:rgba(220,214,240,.55);cursor:pointer;font-size:26px;line-height:1;padding:0 2px">&times;</button>
+        </div>
+        <div style="font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:rgba(196,169,255,.5);margin-bottom:22px">{{ foundCount }} of {{ total }} stars remembered</div>
+        <div style="position:relative">
+          <div style="position:absolute;left:11px;top:6px;bottom:6px;width:1px;background:linear-gradient(180deg,rgba(180,160,255,.02),rgba(180,160,255,.22),rgba(180,160,255,.02))"></div>
+          <div style="display:flex;flex-direction:column">
+            <sc-for list="{{ foundList }}" as="w" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:14px;padding:11px 2px">
+                <div style="position:relative;width:22px;flex-shrink:0;display:flex;justify-content:center">
+                  <span style="{{ w.haloStyle }}"></span>
+                  <span style="{{ w.dotStyle }}"></span>
+                </div>
+                <button onClick="{{ w.onClick }}" style="flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;border:0;background:transparent;cursor:pointer;padding:9px 12px;border-radius:12px;transition:background .2s" style-hover="background:rgba(255,255,255,.05)">
+                  <span style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                    <span style="font-family:'Space Mono',monospace;font-size:14px;color:#efeaff;letter-spacing:.02em">{{ w.word }}</span>
+                    <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:13.5px;color:rgba(220,214,240,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ w.title }}</span>
+                  </span>
+                  <span style="font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.04em;color:rgba(196,169,255,.5);white-space:nowrap;flex-shrink:0">{{ w.dateLabel }}</span>
+                </button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ── Message card modal ────────────────────────────────────────────── -->
+  <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeMessage }}" style="position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,6,13,.74);backdrop-filter:blur(10px);animation:backdropIn .5s ease both">
+      <div onClick="{{ stop }}" class="msg-card" style="{{ cardStyle }}">
+        <div style="position:absolute;left:0;top:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--c),transparent)"></div>
+        <span style="position:absolute;left:50%;top:-46px;transform:translateX(-50%);width:26px;height:26px;border-radius:50%;background:var(--c);box-shadow:0 0 30px var(--c),0 0 60px var(--c);animation:breathe 3.6s ease-in-out infinite"></span>
+        <div style="font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--c);opacity:.9;margin-bottom:10px;animation:textRise .7s ease both">{{ active.when }}</div>
+        <h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(32px,5vw,50px);line-height:1.04;color:#f4f0ff;margin-bottom:22px;text-shadow:0 0 26px var(--c);animation:textRise .7s ease both;animation-delay:.06s;opacity:0">{{ active.title }}</h2>
+        <sc-for list="{{ active.lines }}" as="line" hint-placeholder-count="3">
+          <p style="{{ line.style }}">{{ line.text }}</p>
+        </sc-for>
+        <sc-if value="{{ active.hasSpotify }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:22px;animation:textRise .9s ease both;animation-delay:.5s;opacity:0">
+            <div style="font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--c);opacity:.85;margin-bottom:12px">songs that remind me of you</div>
+            <iframe src="{{ active.spotify }}" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:14px;border:1px solid rgba(180,160,255,.18);display:block"></iframe>
+          </div>
+        </sc-if>
+        <sc-if value="{{ active.multi }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:30px;display:flex;align-items:center;gap:16px">
+            <button onClick="{{ active.prevNote }}"    aria-label="Previous note" style="width:42px;height:42px;border-radius:50%;border:1px solid rgba(220,214,240,.2);background:rgba(255,255,255,.03);color:#efeaff;cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;transition:border-color .2s,background .2s,transform .2s" style-hover="border-color:var(--c);background:rgba(255,255,255,.08)" style-active="transform:scale(.9)">&#8249;</button>
+            <span style="min-width:54px;text-align:center;font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.06em;color:var(--c)">{{ active.counter }}</span>
+            <button onClick="{{ active.nextNote }}"    aria-label="Next note"     style="width:42px;height:42px;border-radius:50%;border:1px solid rgba(220,214,240,.2);background:rgba(255,255,255,.03);color:#efeaff;cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;transition:border-color .2s,background .2s,transform .2s" style-hover="border-color:var(--c);background:rgba(255,255,255,.08)" style-active="transform:scale(.9)">&#8250;</button>
+            <div style="flex:1"></div>
+            <button onClick="{{ active.shuffleNote }}" style="border:1px solid rgba(220,214,240,.18);background:transparent;color:rgba(238,234,250,.78);cursor:pointer;padding:9px 18px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;transition:border-color .2s,color .2s,transform .2s" style-hover="border-color:var(--c);color:#fff" style-active="transform:scale(.96)">surprise me</button>
+          </div>
+        </sc-if>
+        <div style="margin-top:22px;display:flex;align-items:center;gap:14px;animation:textRise .8s ease both;animation-delay:.7s;opacity:0">
+          <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.06em;color:rgba(220,214,240,.4)">{{ active.foundOn }}</span>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(220,214,240,.18))"></div>
+          <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;color:rgba(220,214,240,.5)">{{ active.codeLabel }}</span>
+          <button onClick="{{ closeMessage }}" style="border:1px solid rgba(220,214,240,.2);background:transparent;color:rgba(238,234,250,.8);cursor:pointer;padding:8px 18px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;transition:background .2s,transform .2s" style-hover="background:rgba(220,214,240,.08)" style-active="transform:scale(.96)">close</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ── Milestone toast ───────────────────────────────────────────────── -->
+  <sc-if value="{{ hasMilestone }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;top:0;left:0;right:0;z-index:25;display:flex;justify-content:center;pointer-events:none;padding-top:88px">
+      <div style="padding:13px 26px;border-radius:40px;background:rgba(22,17,42,.82);backdrop-filter:blur(10px);border:1px solid rgba(196,169,255,.3);box-shadow:0 12px 40px rgba(0,0,0,.4);font-family:'Instrument Serif',serif;font-style:italic;font-size:18px;color:#efeaff;animation:toastIn .6s cubic-bezier(.2,.8,.2,1) both">{{ milestone }}</div>
+    </div>
+  </sc-if>
+
+  <!-- ── Intro screen ──────────────────────────────────────────────────── -->
+  <sc-if value="{{ showIntro }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ dismissIntro }}" ref="{{ setIntro }}" class="intro-screen" style="position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;text-align:center;padding-left:32px;padding-right:32px;padding-bottom:40px;cursor:pointer;background:radial-gradient(ellipse 90% 70% at 50% 40%,#161029,#06060d 78%);animation:backdropIn .6s ease both">
+      <div style="font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:rgba(196,169,255,.6);animation:fadeUp 1.1s ease both">Happy 20th Birthday</div>
+      <div style="font-family:'Parisienne',cursive;font-size:clamp(64px,13vw,150px);line-height:.92;color:#f3eeff;margin:6px 0 2px;text-shadow:0 0 50px rgba(160,120,255,.5);animation:fadeUp 1.3s ease both;animation-delay:.35s;opacity:0">Renes</div>
+      <div style="display:flex;align-items:center;gap:14px;margin:10px 0 18px;animation:fadeUp 1.2s ease both;animation-delay:.9s;opacity:0">
+        <span style="width:46px;height:1px;background:linear-gradient(90deg,transparent,rgba(196,169,255,.6))"></span>
+        <span style="width:7px;height:7px;border-radius:50%;background:#ffd27a;box-shadow:0 0 14px #ffd27a"></span>
+        <span style="width:46px;height:1px;background:linear-gradient(90deg,rgba(196,169,255,.6),transparent)"></span>
+      </div>
+      <div style="max-width:32ch;font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(18px,2.6vw,25px);line-height:1.45;color:rgba(228,222,246,.82);text-wrap:balance;animation:fadeUp 1.3s ease both;animation-delay:1.25s;opacity:0">I made you a sky, twenty little stars, each holding something I wanted to tell you. Light them one at a time, whenever the feeling finds you.</div>
+      <div style="margin-top:40px;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:rgba(196,169,255,.65);animation:fadeUp 1.2s ease both,labelGlow 2.8s ease-in-out 2.8s infinite;animation-delay:2.2s;opacity:0">tap to begin &#8250;</div>
+    </div>
+  </sc-if>
+
+</div><!-- end background -->
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
+class Component extends DCLogic {
+
+  // ── Data (defined in data.js) ────────────────────────────────────────
+  DATA     = window.STARS.DATA;
+  BDAY     = window.STARS.BDAY;
+  EGG      = window.STARS.EGG;
+  PLAYLIST = window.STARS.PLAYLIST;
+  SPOTIFY  = window.STARS.SPOTIFY;
+
+  // ── Initial state ────────────────────────────────────────────────────
+  state = {
+    unlocked:  this.load(),
+    codeInput: '',
+    error:     false,
+    active:    null,
+    noteIndex: 0,
+    hintMsg:   '',
+    finale:    false,
+    muted:     this.loadMuted(),
+    showIntro: (!this.devMode()),
+    milestone: '',
+    isWide:    (typeof window !== 'undefined' && window.innerWidth >= 681),
+    listOpen:  false
+  };
+
+  // ── Ref setters ──────────────────────────────────────────────────────
+  setCanvas    = (el) => { if(!el||this.canvasEl===el) return; this.canvasEl=el; this.sizeCanvas(); this.makeStars(); if(!this._raf) this._raf=requestAnimationFrame(this.loop); };
+  setContainer = (el) => { this.containerEl=el; };
+  setInput     = (el) => { this.inputEl=el; };
+  setIntro     = (el) => { this.introEl=el; };
+
+  // ── Canvas render loop ───────────────────────────────────────────────
+  loop = (t) => {
+    const c=this.canvasEl; if(!c){ this._raf=requestAnimationFrame(this.loop); return; }
+    const ctx=c.getContext('2d'), w=c.width, h=c.height; ctx.clearRect(0,0,w,h);
+    const P=this._par||(this._par={x:0,y:0,tx:0,ty:0}); P.x+=(P.tx-P.x)*.05; P.y+=(P.ty-P.y)*.05;
+    if(this.stars){
+      ctx.save(); ctx.translate(P.x*this.dpr, P.y*this.dpr);
+      for(const s of this.stars){
+        const a=Math.max(0,s.base+s.amp*Math.sin(t/1000*s.tw+s.ph));
+        ctx.globalAlpha=a; ctx.fillStyle='#eae6ff'; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,6.283); ctx.fill();
+        if(s.r>1.0*this.dpr){ ctx.globalAlpha=a*.5; ctx.beginPath(); ctx.arc(s.x,s.y,s.r*2.4,0,6.283); ctx.fillStyle='rgba(190,170,255,.5)'; ctx.fill(); }
+        s.y+=s.vy; if(s.y>h){ s.y=0; s.x=Math.random()*w; }
+      }
+      ctx.restore();
+    }
+    this._shoot=(this._shoot||0)-1;
+    if(!this.reduced&&this._shoot<=0&&Math.random()<.004){
+      this.shoot={ x:Math.random()*w*.7, y:Math.random()*h*.4, vx:(7+Math.random()*5)*this.dpr, vy:(3+Math.random()*3)*this.dpr, life:1 };
+      this._shoot=120;
+    }
+    if(this.shoot){
+      const sh=this.shoot; ctx.globalAlpha=sh.life; ctx.strokeStyle='rgba(220,220,255,.9)'; ctx.lineWidth=1.6*this.dpr;
+      ctx.beginPath(); ctx.moveTo(sh.x,sh.y); ctx.lineTo(sh.x-sh.vx*4,sh.y-sh.vy*4); ctx.stroke();
+      sh.x+=sh.vx; sh.y+=sh.vy; sh.life-=.02; if(sh.life<=0) this.shoot=null;
+    }
+    if(this.particles){
+      for(let i=this.particles.length-1;i>=0;i--){
+        const p=this.particles[i]; p.vy+=.045*this.dpr; p.vx*=.99; p.x+=p.vx; p.y+=p.vy; p.life-=p.decay;
+        if(p.life<=0){ this.particles.splice(i,1); continue; }
+        ctx.globalAlpha=Math.max(0,p.life);
+        if(p.heart){ this.drawHeart(ctx,p.x,p.y,p.size,p.color); }
+        else { ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,6.283); ctx.fill(); ctx.globalAlpha=Math.max(0,p.life*.4); ctx.beginPath(); ctx.arc(p.x,p.y,p.size*2.6,0,6.283); ctx.fill(); }
+      }
+    }
+    ctx.globalAlpha=1; this._raf=requestAnimationFrame(this.loop);
+  };
+
+  // ── Arrow event handlers ─────────────────────────────────────────────
+  resetAll = () => {
+    try{ localStorage.removeItem('renes-gift-v2'); }catch(e){}
+    if(this.particles) this.particles.length=0;
+    this.setState({ unlocked:{}, active:null, noteIndex:0, finale:false, codeInput:'', error:false, hintMsg:'' });
+  };
+
+  dismissIntro = () => {
+    try{ localStorage.setItem('renes-intro-seen','1'); }catch(e){}
+    this.initAudio(); this.startAmbient();
+    const el=this.introEl;
+    const done=()=>{ if(this._introClosing){ this._introClosing=false; this.setState({showIntro:false}, ()=>{ if(this.inputEl) this.inputEl.focus(); this.armIdle(); }); } };
+    if(this._introClosing) return;
+    this._introClosing=true;
+    if(el&&el.animate){ el.style.pointerEvents='none'; const a=el.animate([{opacity:1,transform:'scale(1)',filter:'blur(0px)'},{opacity:0,transform:'scale(1.08)',filter:'blur(9px)'}],{duration:1500,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'}); a.onfinish=done; setTimeout(done,1600); }
+    else { done(); }
+  };
+
+  toggleMute = () => {
+    const m=!this.state.muted;
+    try{ localStorage.setItem('renes-muted', m?'1':'0'); }catch(e){}
+    if(!m) this.initAudio();
+    this.setState({muted:m}, ()=>{ if(m) this.stopAmbient(); else this.startAmbient(); });
+  };
+
+  toggleList  = () => this.setState(s=>({listOpen:!s.listOpen}));
+  replayIntro = () => { try{localStorage.setItem('renes-intro-seen','');}catch(e){} clearTimeout(this._idle); this._introClosing=false; this.setState({showIntro:true, active:null}); };
+
+  lightAll = () => {
+    const unlocked={...this.state.unlocked}, now=Date.now();
+    this.DATA.forEach(e=>(e.notes||[]).forEach(n=>{ if(n.code&&n.code[0]!=='_') unlocked[n.code]=now; }));
+    unlocked['_complete']=true; this.save(unlocked);
+    this.setState({unlocked, finale:true, active:null});
+    setTimeout(()=>{ this.celebrate(); this.playBirthday(); this.burstAt('birthday'); }, 300);
+    const bnotes=this.BDAY.notes.filter(n=>unlocked[n.code]); const bidx=bnotes.findIndex(n=>n.code==='_complete');
+    setTimeout(()=>this.setState({active:'birthday', noteIndex:bidx<0?0:bidx}), 950);
+  };
+
+  submit = () => {
+    const v=(this.state.codeInput||'').trim().toLowerCase(); if(!v) return;
+    let note=null, emo=null;
+    for(const e of [...this.DATA,this.BDAY,this.EGG]){ const n=(e.notes||[]).find(x=>x.code&&x.code[0]!=='_'&&x.code.toLowerCase()===v); if(n){ note=n; emo=e; break; } }
+    if(!note){ this.setState({error:true, hintMsg:'no message answers to that word, try another'}); clearTimeout(this._sh); this._sh=setTimeout(()=>this.setState({error:false}),650); return; }
+    if(this.state.unlocked[note.code]){
+      const un=this.unlockedNotesFor(emo); const idx=un.findIndex(n=>n.code===note.code);
+      this.setState({codeInput:'', error:false, hintMsg:'replaying this one, here it is again'});
+      clearTimeout(this._sh); this._sh=setTimeout(()=>this.setState({hintMsg:''}),2400);
+      this.playUnlock(); if(emo.id==='egg'){ this.heartShower(); } else { setTimeout(()=>this.burstAt(emo.id),20); }
+      setTimeout(()=>this.setState({active:emo.id, noteIndex:idx<0?0:idx}),440); return;
+    }
+    const prevCount=this.count();
+    const unlocked={...this.state.unlocked,[note.code]:Date.now()};
+    if(emo.id==='egg'){ this.save(unlocked); this.setState({unlocked, codeInput:'', error:false, hintMsg:''}); this.playBirthday(); this.heartShower(); setTimeout(()=>this.setState({active:'egg', noteIndex:0}),700); return; }
+    const willBeAll=this.DATA.every(e=>(e.notes||[]).some(n=>unlocked[n.code]));
+    if(willBeAll) unlocked['_complete']=true;
+    this.save(unlocked);
+    const newCount=this.DATA.filter(e=>(e.notes||[]).some(n=>unlocked[n.code])).length;
+    this.setState({unlocked, codeInput:'', error:false, hintMsg:''}); clearTimeout(this._idle);
+    if(emo.id==='birthday') this.playBirthday(); else this.playUnlock();
+    setTimeout(()=>this.burstAt(emo.id), 40);
+    if(willBeAll&&!this.state.finale){
+      this.setState({finale:true});
+      setTimeout(()=>{ this.celebrate(); this.playBirthday(); this.burstAt('birthday'); }, 1100);
+      const bnotes=this.BDAY.notes.filter(n=>unlocked[n.code]); const bidx=bnotes.findIndex(n=>n.code==='_complete');
+      setTimeout(()=>this.setState({active:'birthday', noteIndex:bidx<0?0:bidx}), 1750);
+    } else {
+      const un=emo.notes.filter(n=>unlocked[n.code]); const idx=un.findIndex(n=>n.code===note.code);
+      setTimeout(()=>this.setState({active:emo.id, noteIndex:idx<0?0:idx}), 780);
+      const MILE={5:'Five lights. A corner of your sky is glowing.',10:'Ten stars, halfway, and the sky\'s already warmer.',15:'Fifteen. Almost the whole sky is yours.'};
+      if(MILE[newCount]&&newCount>prevCount) this.showMilestone(MILE[newCount]);
+    }
+  };
+
+  onInput = (e) => { this.setState({codeInput:e.target.value, error:false, hintMsg:''}); this.armIdle(); };
+  onKey   = (e) => { if(e.key==='Enter') this.submit(); };
+
+  clickCenter = () => {
+    if(this.unlockedNotesFor(this.BDAY).length>0){ this.setState({active:'birthday', noteIndex:0}); }
+    else { this.setState({hintMsg:'this is your birthday star, it opens with the word I gave you for today'}); if(this.inputEl) this.inputEl.focus(); clearTimeout(this._hk); this._hk=setTimeout(()=>this.setState({hintMsg:''}),3200); }
+  };
+
+  openBday     = () => this.setState({active:'birthday', noteIndex:0});
+  openPlaylist = () => this.setState({active:'playlist', noteIndex:0});
+  openEgg      = () => this.setState({active:'egg', noteIndex:0});
+  closeMessage = () => this.setState({active:null});
+
+  nextNote    = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n) this.setState(s=>({noteIndex:(s.noteIndex+1)%n})); };
+  prevNote    = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n) this.setState(s=>({noteIndex:(s.noteIndex-1+n)%n})); };
+  shuffleNote = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n<2) return; let r=this.state.noteIndex; while(r===this.state.noteIndex) r=Math.floor(Math.random()*n); this.setState({noteIndex:r}); };
+}
+
+// Mix in all the regular methods from app.js
+Object.assign(Component.prototype, window.AppMethods);
+</script>
+
+</body>
+</html>

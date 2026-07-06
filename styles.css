@@ -1,0 +1,73 @@
+/* ── Reset & base ─────────────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
+html,body{scrollbar-width:none;-ms-overflow-style:none}
+body{background:#06060d;overflow:hidden;font-family:'Outfit',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(196,169,255,.3)}
+input{font-family:'Space Mono',monospace}
+input::placeholder{color:rgba(210,205,230,.32);letter-spacing:.06em}
+
+/* ── Layout helpers ───────────────────────────────────────────────────── */
+.intro-screen{justify-content:center;padding-top:32px}
+.app-header{padding-top:30px}
+.msg-card{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none;-ms-overflow-style:none}
+.msg-card::-webkit-scrollbar{width:0;height:0;display:none}
+.nobar{scrollbar-width:none;-ms-overflow-style:none}
+.nobar::-webkit-scrollbar{width:0;height:0;display:none}
+.const-wrap{position:relative;flex:1;min-height:0;display:flex;justify-content:center;padding:0 12px}
+.constellation{height:100%;aspect-ratio:6/5;max-width:100%}
+.const-wrap-x-removed{}
+
+/* ── Star sizes (phone defaults) ──────────────────────────────────────── */
+.o-twk{width:8px;height:8px}
+.o-lring{width:26px;height:26px}
+.o-halo{width:78px;height:78px}
+.o-ring{width:30px;height:30px}
+.o-core{width:17px;height:17px}
+
+/* ── Responsive: laptop ───────────────────────────────────────────────── */
+@media (min-width:681px){
+  .intro-screen{justify-content:center;padding-top:32px}
+  .app-header{padding-top:30px;position:relative;z-index:3;pointer-events:none}
+  .app-header button{pointer-events:auto}
+  .bday-row{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:4;pointer-events:none}
+  .bday-row button{pointer-events:auto}
+  .gift-footer{margin-top:auto;position:relative;z-index:3;pointer-events:none}
+  .gift-footer input,.gift-footer button{pointer-events:auto}
+  .const-wrap{position:absolute;inset:0;padding:104px 4% 128px;z-index:1}
+  .constellation{width:100% !important;height:100% !important;aspect-ratio:auto !important;max-width:100% !important}
+  .o-halo{width:38px;height:38px}
+  .o-ring{width:18px;height:18px}
+  .o-core{width:9px;height:9px}
+  .o-lring{width:16px;height:16px}
+  .o-twk{width:6px;height:6px}
+}
+
+/* ── Responsive: phone ────────────────────────────────────────────────── */
+@media (max-width:680px){
+  .intro-screen{justify-content:flex-start;padding-top:18vh}
+  .app-header{padding-top:60px}
+}
+
+/* ── Accessibility ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.06s !important}
+}
+
+/* ── Animations ───────────────────────────────────────────────────────── */
+@keyframes orbIn     {from{opacity:0;transform:translate(-50%,-50%) scale(.2)}   to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes popIn     {from{opacity:0;transform:scale(.4)}                         to{opacity:1;transform:scale(1)}}
+@keyframes breathe   {0%,100%{transform:scale(1);opacity:.9}                     50%{transform:scale(1.14);opacity:1}}
+@keyframes haloPulse {0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)} 50%{opacity:.85;transform:translate(-50%,-50%) scale(1.18)}}
+@keyframes twinkle   {0%,100%{opacity:.18;transform:translate(-50%,-50%) scale(.85)} 50%{opacity:.5;transform:translate(-50%,-50%) scale(1.05)}}
+@keyframes floatNeb  {0%,100%{transform:translate(0,0) scale(1)}                 33%{transform:translate(40px,-30px) scale(1.08)}  66%{transform:translate(-30px,25px) scale(.95)}}
+@keyframes shake     {10%,90%{transform:translateX(-2px)}  20%,80%{transform:translateX(4px)}  30%,50%,70%{transform:translateX(-7px)}  40%,60%{transform:translateX(7px)}}
+@keyframes backdropIn{from{opacity:0}                                              to{opacity:1}}
+@keyframes cardIn    {from{opacity:0;transform:translateY(26px) scale(.94)}       to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes textRise  {from{opacity:0;transform:translateY(14px)}                  to{opacity:1;transform:translateY(0)}}
+@keyframes textRiseB {from{opacity:0;transform:translateY(14px)}                  to{opacity:1;transform:translateY(0)}}
+@keyframes spinSlow  {to{transform:rotate(360deg)}}
+@keyframes fadeUp    {from{opacity:0;transform:translateY(16px)}                  to{opacity:1;transform:translateY(0)}}
+@keyframes labelGlow {0%,100%{opacity:.7}                                         50%{opacity:1}}
+@keyframes toastIn   {from{opacity:0;transform:translateY(-14px)}                 to{opacity:1;transform:translateY(0)}}
