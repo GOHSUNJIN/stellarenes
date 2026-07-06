@@ -226,7 +226,6 @@ window.AppMethods = {
   // ── Render ───────────────────────────────────────────────────────────────
   renderVals(){
     const count=this.count(), foundTotal=this.foundTotal(), total=this.DATA.length;
-    try{ document.title=count>0?'Stellarenes ✦ '+count+' / '+total:'Stellarenes ✦'; }catch(e){}
     const wide=this.state.isWide;
     const P=this.DATA.map((e,i)=>{
       if(!wide) return {x:e.x,y:e.y};
