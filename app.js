@@ -200,7 +200,7 @@ window.AppMethods = {
     window.removeEventListener('resize', this._onResize);
     window.removeEventListener('mousemove', this._onMove);
     if(this._onVisible) document.removeEventListener('visibilitychange',this._onVisible);
-    this.stopAmbient(); clearTimeout(this._idle); clearTimeout(this._mt); cancelAnimationFrame(this._raf);
+    this.stopAmbient(); clearTimeout(this._idle); clearTimeout(this._mt); clearTimeout(this._ch); clearTimeout(this._hk); clearTimeout(this._sh); cancelAnimationFrame(this._raf);
     const sb=this.getSupabase();
     if(sb) sb.removeAllChannels();
   },
@@ -226,6 +226,7 @@ window.AppMethods = {
   // ── Render ───────────────────────────────────────────────────────────────
   renderVals(){
     const count=this.count(), foundTotal=this.foundTotal(), total=this.DATA.length;
+    try{ document.title=count>0?'Stellarenes ✦ '+count+' / '+total:'Stellarenes ✦'; }catch(e){}
     const wide=this.state.isWide;
     const P=this.DATA.map((e,i)=>{
       if(!wide) return {x:e.x,y:e.y};
@@ -236,7 +237,7 @@ window.AppMethods = {
       const found=this.unlockedNotesFor(e).length, unlocked=found>0;
       return { id:e.id, title:e.title, unlocked, locked:!unlocked, found, foundLabel:found>1?(found+' messages'):'', aria:unlocked?e.title:'a locked star',
         wrap:{ position:'absolute', left:P[i].x+'%', top:P[i].y+'%', width:'52px', height:'52px', background:'transparent', border:0, padding:0, cursor:'pointer', '--c':e.color, '--lblo':'0', zIndex:1, transition:'filter .35s ease, transform .2s ease', animation:'orbIn .9s cubic-bezier(.2,.8,.2,1) both', animationDelay:(i*.05)+'s' },
-        hover: unlocked ? { '--lblo':'1', zIndex:6, filter:'brightness(1.4)', transform:'scale(1.08)' } : { '--lblo':'1', zIndex:6, filter:'brightness(1.35)' },
+        hover: unlocked ? { '--lblo':'1', zIndex:6, filter:'brightness(1.4)', transform:'translate(-50%,-50%) scale(1.08)' } : { '--lblo':'1', zIndex:6, filter:'brightness(1.35)' },
         onClick:()=>this.clickOrb({id:e.id,unlocked,title:e.title}) };
     });
     const lines=this.DATA.map((e,i)=>{
@@ -287,7 +288,7 @@ window.AppMethods = {
         onClick:()=>this.setState({active:f.e.id, noteIndex:idx<0?0:idx, listOpen:false}) };
     });
     const eggFound=!!this.state.unlocked['forever'];
-    return { count, total, foundTotal, orbs, lines, showCenter:bdayAwake, centerLocked:!bdayAwake, clickCenter:this.clickCenter, showPlaylist:(count>=total), openPlaylist:this.openPlaylist, showEgg:eggFound, openEgg:this.openEgg, foundList, hasFound:foundList.length>0, foundCount:foundList.length, listOpen:this.state.listOpen, toggleList:this.toggleList, modalOpen:!!active, active, openBday:this.openBday, closeMessage:this.closeMessage, stop:this.stop, submit:this.submit, onInput:this.onInput, onKey:this.onKey, setCanvas:this.setCanvas, setContainer:this.setContainer, setInput:this.setInput, setIntro:this.setIntro, codeInput:this.state.codeInput, hintMsg:this.state.hintMsg, muted:this.state.muted, soundOn:!this.state.muted, toggleMute:this.toggleMute, showIntro:this.state.showIntro, dismissIntro:this.dismissIntro, milestone:this.state.milestone, hasMilestone:!!this.state.milestone, inputStyle, barStyle, cardStyle, shareOpen:this.state.shareOpen&&!!active, openShare:this.openShare, closeShare:this.closeShare, progressBarStyle, shareCardStyle };
+    return { count, total, foundTotal, orbs, lines, showCenter:bdayAwake, centerLocked:!bdayAwake, clickCenter:this.clickCenter, showPlaylist:(count>=total), openPlaylist:this.openPlaylist, showEgg:eggFound, openEgg:this.openEgg, foundList, hasFound:foundList.length>0, foundCount:foundList.length, listOpen:this.state.listOpen, toggleList:this.toggleList, modalOpen:!!active, active, openBday:this.openBday, closeMessage:this.closeMessage, stop:this.stop, submit:this.submit, onInput:this.onInput, onKey:this.onKey, setCanvas:this.setCanvas, setContainer:this.setContainer, setInput:this.setInput, setIntro:this.setIntro, codeInput:this.state.codeInput, hintMsg:this.state.hintMsg, muted:this.state.muted, soundOn:!this.state.muted, toggleMute:this.toggleMute, showIntro:this.state.showIntro, dismissIntro:this.dismissIntro, milestone:this.state.milestone, hasMilestone:!!this.state.milestone, inputStyle, barStyle, cardStyle, shareOpen:this.state.shareOpen&&!!active, openShare:this.openShare, closeShare:this.closeShare, progressBarStyle, shareCardStyle, onCardTouchStart:this.onCardTouchStart, onCardTouchEnd:this.onCardTouchEnd, copyShareText:this.copyShareText, muteLabel:this.state.muted?'Unmute music':'Mute music' };
   }
 
 };

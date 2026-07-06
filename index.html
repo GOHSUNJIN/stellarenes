@@ -49,7 +49,7 @@
     <sc-if value="{{ showEgg }}" hint-placeholder-val="{{ false }}">
       <button onClick="{{ openEgg }}" aria-label="A secret you found" title="a secret you found" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid rgba(255,121,176,.4);background:rgba(20,16,40,.5);color:#ff9ecb;cursor:pointer;border-radius:50%;font-size:15px;box-shadow:0 0 14px rgba(255,121,176,.35);animation:breathe 3.6s ease-in-out infinite;transition:border-color .2s,color .2s" style-hover="border-color:rgba(255,121,176,.8);color:#ffd1e6">&#9825;</button>
     </sc-if>
-    <button onClick="{{ toggleMute }}" aria-label="Toggle sound" title="our song: Soft Spot" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid rgba(180,160,255,.2);background:rgba(20,16,40,.5);color:rgba(220,214,240,.75);cursor:pointer;border-radius:50%;font-size:15px;transition:border-color .2s,color .2s" style-hover="border-color:rgba(180,160,255,.5);color:#efeaff">
+    <button onClick="{{ toggleMute }}" aria-label="{{ muteLabel }}" title="our song: Soft Spot" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid rgba(180,160,255,.2);background:rgba(20,16,40,.5);color:rgba(220,214,240,.75);cursor:pointer;border-radius:50%;font-size:15px;transition:border-color .2s,color .2s" style-hover="border-color:rgba(180,160,255,.5);color:#efeaff">
       <sc-if value="{{ soundOn }}" hint-placeholder-val="{{ true }}"><span>&#128266;</span></sc-if>
       <sc-if value="{{ muted }}"   hint-placeholder-val="{{ false }}"><span>&#128263;</span></sc-if>
     </button>
@@ -134,7 +134,7 @@
     <footer class="gift-footer" style="padding:4px 24px 30px;display:flex;flex-direction:column;align-items:center;gap:10px;animation:fadeUp 1.3s ease both">
       <div style="height:40px;display:flex;align-items:center;justify-content:center;max-width:92vw;text-align:center;font-family:'Instrument Serif',serif;font-style:italic;font-size:16px;line-height:1.3;color:rgba(255,180,180,.85);transition:opacity .3s">{{ hintMsg }}</div>
       <div style="{{ barStyle }}">
-        <input value="{{ codeInput }}" onInput="{{ onInput }}" onKeyDown="{{ onKey }}" ref="{{ setInput }}" placeholder="type a word…" style="{{ inputStyle }}" />
+        <input value="{{ codeInput }}" onInput="{{ onInput }}" onKeyDown="{{ onKey }}" ref="{{ setInput }}" placeholder="type a word…" style="{{ inputStyle }}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
         <button onClick="{{ submit }}" style="flex-shrink:0;white-space:nowrap;border:0;cursor:pointer;padding:0 22px;height:52px;border-radius:40px;background:linear-gradient(135deg,#b69bff,#7c5cdc);color:#0c0a1c;font-family:'Outfit',sans-serif;font-weight:500;font-size:13px;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 0 26px rgba(150,110,255,.45);transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-2px);box-shadow:0 0 38px rgba(150,110,255,.7)" style-active="transform:scale(.96)">Light it up</button>
       </div>
       <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;color:rgba(196,169,255,.4)">these stars wake to the words you were given</div>
@@ -178,7 +178,7 @@
   <!-- ── Message card modal ────────────────────────────────────────────── -->
   <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ closeMessage }}" style="position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,6,13,.74);backdrop-filter:blur(10px);animation:backdropIn .5s ease both">
-      <div onClick="{{ stop }}" class="msg-card" style="{{ cardStyle }}">
+      <div onClick="{{ stop }}" class="msg-card" style="{{ cardStyle }}" onTouchStart="{{ onCardTouchStart }}" onTouchEnd="{{ onCardTouchEnd }}">
         <div style="position:absolute;left:0;top:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--c),transparent)"></div>
         <span style="position:absolute;left:50%;top:-46px;transform:translateX(-50%);width:26px;height:26px;border-radius:50%;background:var(--c);box-shadow:0 0 30px var(--c),0 0 60px var(--c);animation:breathe 3.6s ease-in-out infinite"></span>
         <div style="font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--c);opacity:.9;margin-bottom:10px;animation:textRise .7s ease both">{{ active.when }}</div>
@@ -230,7 +230,10 @@
           <p style="margin:0 0 14px;font-family:'Instrument Serif',serif;font-size:clamp(16px,2.2vw,20px);line-height:1.6;color:rgba(238,234,250,.88)">{{ line.text }}</p>
         </sc-for>
         <div style="margin-top:28px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(196,169,255,.4)">&#10022; stellarenes</div>
-        <button onClick="{{ closeShare }}" style="margin-top:18px;border:1px solid rgba(220,214,240,.18);background:transparent;color:rgba(238,234,250,.65);cursor:pointer;padding:8px 22px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;transition:background .2s" style-hover="background:rgba(220,214,240,.07)">done</button>
+        <div style="margin-top:18px;display:flex;gap:12px;justify-content:center">
+          <button onClick="{{ copyShareText }}" style="border:1px solid rgba(220,214,240,.18);background:transparent;color:rgba(238,234,250,.65);cursor:pointer;padding:8px 22px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;transition:background .2s" style-hover="background:rgba(220,214,240,.07)">copy text</button>
+          <button onClick="{{ closeShare }}" style="border:1px solid rgba(220,214,240,.18);background:transparent;color:rgba(238,234,250,.65);cursor:pointer;padding:8px 22px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;transition:background .2s" style-hover="background:rgba(220,214,240,.07)">done</button>
+        </div>
       </div>
     </div>
   </sc-if>
@@ -344,8 +347,32 @@ class Component extends DCLogic {
 
   toggleList = () => this.setState(s=>({listOpen:!s.listOpen}));
 
-  openShare  = () => this.setState({shareOpen:true});
+  openShare = () => {
+    const id=this.state.active; if(!id) return;
+    const e=this.entryById(id);
+    const notes=this.unlockedNotesFor(e);
+    const idx=notes.length?(((this.state.noteIndex%notes.length)+notes.length)%notes.length):0;
+    const note=notes[idx];
+    if(navigator.share&&note){
+      navigator.share({title:e?e.title:'Stellarenes',text:note.text||''}).catch(err=>{ if(err&&err.name!=='AbortError') this.setState({shareOpen:true}); });
+    } else {
+      this.setState({shareOpen:true});
+    }
+  };
   closeShare = () => this.setState({shareOpen:false});
+
+  copyShareText = () => {
+    const id=this.state.active; if(!id) return;
+    const e=this.entryById(id);
+    const notes=this.unlockedNotesFor(e);
+    const idx=notes.length?(((this.state.noteIndex%notes.length)+notes.length)%notes.length):0;
+    const note=notes[idx]; if(!note) return;
+    const txt=(e?e.title+'\n\n':'')+(note.text||'');
+    navigator.clipboard.writeText(txt).then(()=>{
+      this.setState({shareOpen:false, hintMsg:'✦ copied to clipboard'});
+      clearTimeout(this._ch); this._ch=setTimeout(()=>this.setState({hintMsg:''}),2200);
+    }).catch(()=>{});
+  };
 
   submit = () => {
     if(this._submitting) return;
@@ -367,7 +394,7 @@ class Component extends DCLogic {
     if(emo.id==='egg'){
       this.save(unlocked);
       this.saveUnlockToSupabase(note.code, emo.id, emo.title);
-      this.setState({unlocked, codeInput:'', hintMsg:''}); if(this.inputEl) this.inputEl.blur(); this.playBirthday(); this.heartShower(); setTimeout(()=>this.setState({active:'egg', noteIndex:0}),700); return;
+      this.setState({unlocked, codeInput:'', hintMsg:''}); if(this.inputEl) this.inputEl.blur(); this.playBirthday(); try{navigator.vibrate&&navigator.vibrate([10,50,10]);}catch(_){} this.heartShower(); setTimeout(()=>this.setState({active:'egg', noteIndex:0}),700); return;
     }
     const willBeAll=this.DATA.every(e=>(e.notes||[]).some(n=>unlocked[n.code]));
     if(willBeAll) unlocked['_complete']=true;
@@ -376,6 +403,7 @@ class Component extends DCLogic {
     const newCount=this.DATA.filter(e=>(e.notes||[]).some(n=>unlocked[n.code])).length;
     this.setState({unlocked, codeInput:'', hintMsg:''}); if(this.inputEl) this.inputEl.blur(); clearTimeout(this._idle);
     if(emo.id==='birthday') this.playBirthday(); else this.playUnlock();
+    try{navigator.vibrate&&navigator.vibrate([10,50,10]);}catch(_){}
     setTimeout(()=>this.burstAt(emo.id), 40);
     if(willBeAll&&!this.state.finale){
       this.setState({finale:true});
@@ -392,7 +420,7 @@ class Component extends DCLogic {
     }
   };
 
-  onInput = (e) => { this.setState({codeInput:e.target.value, error:false, hintMsg:''}); this.armIdle(); };
+  onInput = (e) => { this.setState({codeInput:e.target.value, hintMsg:''}); this.armIdle(); };
   onKey   = (e) => { if(e.key==='Enter') this.submit(); };
 
   clickCenter = () => {
@@ -404,6 +432,14 @@ class Component extends DCLogic {
   openPlaylist = () => this.setState({active:'playlist', noteIndex:0});
   openEgg      = () => this.setState({active:'egg', noteIndex:0});
   closeMessage = () => this.setState({active:null, shareOpen:false});
+
+  onCardTouchStart = (e) => { if(e.touches.length>1){ this._swipeX=null; return; } this._swipeX=e.touches[0].clientX; };
+  onCardTouchEnd   = (e) => {
+    if(this._swipeX==null) return;
+    const dx=e.changedTouches[0].clientX-this._swipeX; this._swipeX=null;
+    if(Math.abs(dx)<40) return;
+    if(dx<0) this.nextNote(e); else this.prevNote(e);
+  };
 
   nextNote    = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n) this.setState(s=>({noteIndex:(s.noteIndex+1)%n})); };
   prevNote    = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n) this.setState(s=>({noteIndex:(s.noteIndex-1+n)%n})); };

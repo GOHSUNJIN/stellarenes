@@ -7,6 +7,7 @@ body{background:#06060d;overflow:hidden;font-family:'Outfit',system-ui,sans-seri
 ::selection{background:rgba(196,169,255,.3)}
 input{font-family:'Space Mono',monospace}
 input::placeholder{color:rgba(210,205,230,.32);letter-spacing:.06em}
+button{touch-action:manipulation}
 
 /* ── Layout helpers ───────────────────────────────────────────────────── */
 .intro-screen{justify-content:center;padding-top:32px}
@@ -16,8 +17,7 @@ input::placeholder{color:rgba(210,205,230,.32);letter-spacing:.06em}
 .nobar{scrollbar-width:none;-ms-overflow-style:none}
 .nobar::-webkit-scrollbar{width:0;height:0;display:none}
 .const-wrap{position:relative;flex:1;min-height:0;display:flex;justify-content:center;padding:0 12px}
-.constellation{height:100%;aspect-ratio:6/5;max-width:100%}
-.const-wrap-x-removed{}
+.constellation{height:100%;aspect-ratio:6/5;max-width:100%;user-select:none}
 
 /* ── Star sizes (phone defaults) ──────────────────────────────────────── */
 .o-twk{width:8px;height:8px}
@@ -58,11 +58,10 @@ input::placeholder{color:rgba(210,205,230,.32);letter-spacing:.06em}
 /* ── Animations ───────────────────────────────────────────────────────── */
 @keyframes orbIn     {from{opacity:0;transform:translate(-50%,-50%) scale(.2)}   to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 @keyframes popIn     {from{opacity:0;transform:scale(.4)}                         to{opacity:1;transform:scale(1)}}
-@keyframes breathe   {0%,100%{transform:scale(1);opacity:.9}                     50%{transform:scale(1.14);opacity:1}}
+@keyframes breathe   {0%,100%{scale:1;opacity:.9}                                  50%{scale:1.14;opacity:1}}
 @keyframes haloPulse {0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)} 50%{opacity:.85;transform:translate(-50%,-50%) scale(1.18)}}
 @keyframes twinkle   {0%,100%{opacity:.18;transform:translate(-50%,-50%) scale(.85)} 50%{opacity:.5;transform:translate(-50%,-50%) scale(1.05)}}
 @keyframes floatNeb  {0%,100%{transform:translate(0,0) scale(1)}                 33%{transform:translate(40px,-30px) scale(1.08)}  66%{transform:translate(-30px,25px) scale(.95)}}
-@keyframes shake     {10%,90%{transform:translateX(-2px)}  20%,80%{transform:translateX(4px)}  30%,50%,70%{transform:translateX(-7px)}  40%,60%{transform:translateX(7px)}}
 @keyframes backdropIn{from{opacity:0}                                              to{opacity:1}}
 @keyframes cardIn    {from{opacity:0;transform:translateY(26px) scale(.94)}       to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes textRise  {from{opacity:0;transform:translateY(14px)}                  to{opacity:1;transform:translateY(0)}}
