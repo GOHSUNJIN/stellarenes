@@ -61,6 +61,6 @@ button{touch-action:manipulation}
 
 /* ── Landscape lock (instant via CSS, no JS event delay) ─────────────────── */
 .landscape-lock{display:none}
-@media(orientation:landscape)and(pointer:coarse){.landscape-lock{display:flex}}
+@media (orientation:landscape) and (max-height:500px){.landscape-lock{display:flex}}
 
 /* Animations → animations.css */
