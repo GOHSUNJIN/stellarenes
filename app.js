@@ -202,10 +202,10 @@ window.AppMethods = {
 
   // ── Interaction ──────────────────────────────────────────────────────────
   clickOrb(orb){
+    if(this.inputEl) this.inputEl.blur();
     if(orb.unlocked){ this.setState({active:orb.id, noteIndex:0}); }
     else {
       this.setState({hintMsg:'✦ '+orb.title+', type its word to light it'});
-      if(this.inputEl && !navigator.maxTouchPoints) this.inputEl.focus();
       clearTimeout(this._hk); this._hk=setTimeout(()=>this.setState({hintMsg:''}),3400);
     }
   },
