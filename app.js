@@ -49,6 +49,13 @@ Object.assign(window.AppMethods, {
         const lnd = window.innerWidth > window.innerHeight;
         if (lnd !== this.state.landscapeWarning) this.setState({ landscapeWarning: lnd });
       }
+      // iOS rotation animation takes ~300ms to settle — re-sync canvas after
+      clearTimeout(this._resizeDelay);
+      this._resizeDelay = setTimeout(() => {
+        this.sizeCanvas();
+        const wide2 = window.innerWidth >= 681;
+        this.setState({ isWide: wide2 });
+      }, 350);
     };
     this._onMove = (e) => {
       const w = window.innerWidth || 1, h = window.innerHeight || 1;

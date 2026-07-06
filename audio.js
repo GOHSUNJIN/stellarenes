@@ -34,24 +34,31 @@ Object.assign(window.AppMethods, {
   startAmbient() {
     if (this.state.muted || this._amb) return;
     const ac = this.initAudio(); if (!ac) return;
-    if (ac.state === 'suspended') { try { ac.resume(); } catch(e) {} }
     if (!this._audio) {
       this._audio = new Audio();
       this._audio.loop = true;
       this._audio.src = './music.mp3';
     }
-    if (!this._ambGain) {
-      try {
-        const src = ac.createMediaElementSource(this._audio);
-        this._ambGain = ac.createGain();
-        src.connect(this._ambGain); this._ambGain.connect(ac.destination);
-      } catch(e) { return; }
+    const doPlay = () => {
+      if (!this._ambGain) {
+        try {
+          const src = ac.createMediaElementSource(this._audio);
+          this._ambGain = ac.createGain();
+          src.connect(this._ambGain); this._ambGain.connect(ac.destination);
+        } catch(e) { return; }
+      }
+      try { this._ambGain.gain.cancelScheduledValues(0); } catch(e) {}
+      this._ambGain.gain.setValueAtTime(0.0001, ac.currentTime);
+      this._ambGain.gain.exponentialRampToValueAtTime(0.55, ac.currentTime + 4);
+      this._amb = true;
+      this._audio.play().catch(() => { this._amb = null; });
+    };
+    // iOS: must wait for resume to fully resolve before calling play()
+    if (ac.state === 'suspended') {
+      ac.resume().then(doPlay).catch(() => {});
+    } else {
+      doPlay();
     }
-    try { this._ambGain.gain.cancelScheduledValues(0); } catch(e) {}
-    this._ambGain.gain.setValueAtTime(0.0001, ac.currentTime);
-    this._ambGain.gain.exponentialRampToValueAtTime(0.55, ac.currentTime + 4);
-    this._amb = true;
-    this._audio.play().catch(() => { this._amb = null; });
   },
 
   stopAmbient() {

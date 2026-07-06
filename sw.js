@@ -1,5 +1,5 @@
 // Stellarenes service worker — bump VERSION on every deploy to force reload
-const VERSION = '2026-07-06-1609';
+const VERSION = '2026-07-06-1614';
 
 self.addEventListener('install', () => self.skipWaiting());
 
