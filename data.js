@@ -27,7 +27,7 @@ window.STARS = {
     { id:'angry',       title:'When you feel angry',              when:'for the burning days',       color:'hsl(14,75%,64%)',  x:50,   y:10,   notes:[ { code:'solar',      text:M.solar      } ] },
     { id:'notokay',     title:'When you feel distant from me',    when:'for the drifting-apart days',color:'hsl(225,30%,62%)', x:59.9, y:37,   notes:[ { code:'tether',     text:M.tether     } ] },
     { id:'playful',     title:'When you feel playful',            when:'for the silly days',         color:'hsl(36,78%,68%)',  x:77,   y:47.2, notes:[ { code:'twinkle',    text:M.twinkle    } ] },
-    { id:'hopeful',     title:'When you feel hopeful',            when:'for the waiting days',       color:'hsl(45,75%,70%)',  x:54.9, y:23.5, notes:[ { code:'wish',       text:M.wish       } ] }
+    { id:'lonely',      title:'When you feel lonely',             when:'for the invisible days',     color:'hsl(235,40%,68%)', x:54.9, y:23.5, notes:[ { code:'void',       text:M.void       } ] }
   ],
 
   BDAY: { id:'birthday', title:'Happy birthday, Renes', when:'open me today', color:'#ffd27a', codeLabel:'with love, always',

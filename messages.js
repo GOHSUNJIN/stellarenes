@@ -86,9 +86,9 @@ Come back to me when you're ready. I'll still be right here, tethered.`,
 Good. Go be silly, go laugh too loud, go let that twinkle in your eye do whatever it wants.
 I love you like this most of all.`,
 
-  wish: `You feel hopeful, and I want to hand you a whole handful of it.
-Whatever you're hoping for, I'm hoping right alongside you.
-Make the wish. I think it's already coming true.`,
+  void: `You're surrounded by people and somehow still completely alone. That's one of the hardest feelings there is.
+It doesn't mean something is wrong with you. It just means you need to feel truly seen, and not everyone in the room knows how to do that.
+I do. Come find me, or just sit here for a second and know I'm already thinking about you.`,
 
 
   // ── Birthday star (center) ───────────────────────────────────────────────

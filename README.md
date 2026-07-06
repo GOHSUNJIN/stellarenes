@@ -57,7 +57,7 @@ Twenty years of you...`,
 | `solar` | When you feel angry |
 | `tether` | When you feel distant from me |
 | `twinkle` | When you feel playful |
-| `wish` | When you feel hopeful |
+| `void` | When you feel lonely |
 
 ### Special codes
 
