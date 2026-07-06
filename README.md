@@ -42,12 +42,12 @@ Twenty years of you...`,
 | `weightless` | When you feel overwhelmed |
 | `polaris` | When you feel lost |
 | `supernova` | When you feel not enough |
-| `drift` | When you feel yourself spiralling |
-| `moonlight` | When you feel restless at night |
+| `drift` | When you're spiralling |
+| `moonlight` | When you can't sleep |
 | `gravity` | When you feel like being held |
 | `orbit` | When you feel far from me |
 | `ignite` | When you're afraid |
-| `stardust` | When you miss the old days |
+| `dusk` | When you feel exhausted |
 | `eclipse` | When you feel loved |
 | `luminous` | When you feel grateful |
 | `zenith` | When you feel proud |

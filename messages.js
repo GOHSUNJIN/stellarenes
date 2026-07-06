@@ -10,81 +10,81 @@ window.MESSAGES = {
   // ── The 20 stars ────────────────────────────────────────────────────────
   //    code = the word you give Renes to unlock that star
 
-  kintsugi: `Your heart aches, and I wish I could carry it for you.
-Broken things can be put back with gold in the cracks, stronger, somehow more beautiful.
-You will love again. Until then, lean all your weight on me.`,
+  kintsugi: `I know your heart is hurting right now and I hate that I can't fix it for you.
+What I can tell you is that you are not going to feel like this forever, even when it really feels that way.
+Let yourself be sad. I'm not going anywhere. I've got you.`,
 
-  weightless: `It's all too much right now, I know.
-Put it down for a second, just this one. You don't have to carry everything at once.
-Breathe. Let yourself feel weightless, even just for a minute.`,
+  weightless: `Stop for a second. Seriously, stop.
+You are doing too much for one person, and you've been doing it without complaining, and I see that.
+Put one thing down. Just one. The rest can wait. You come first.`,
 
-  polaris: `You feel lost, and that's allowed. Being lost only means you're somewhere new.
-You don't owe anyone a finished map, just the next small step.
-And if you can't find north, I'm your polaris. Look for me.`,
+  polaris: `Not knowing what comes next isn't failure. It's just being honest about where you are.
+Everyone around you who looks like they have it figured out is also just guessing.
+You don't have to know yet. I'll help you figure it out.`,
 
-  supernova: `You feel not enough today. I need you to hear this: you are so much more than enough.
-The things that make you feel small are the exact things that make you rare.
-You are not a flicker, Renes. You are a supernova.`,
+  supernova: `I need you to hear this from me specifically: you are more than enough.
+Not almost enough, not enough with caveats. Enough, full stop.
+I know you don't believe me right now. That's okay. I'll believe it for both of us until you can.`,
 
-  drift: `Your mind is spiralling, I know that feeling.
-Nothing has to be solved this second. Let yourself drift for a while, you don't have to fight the current.
-It always settles. I'll be here when it does.`,
+  drift: `Your brain is doing that thing again. I know.
+You don't have to solve everything right now, you just have to get to tomorrow.
+Breathe out. Slower. Again. I've got the rest.`,
 
-  moonlight: `It's late and you can't settle, the quiet feels loud.
-Your worth isn't decided by tonight, or any deadline waiting for tomorrow.
-Let the world go soft. I'll keep watch under the moonlight.`,
+  moonlight: `It's late and your brain won't turn off and everything feels bigger than it should at this hour.
+That's the night lying to you. None of it is as urgent as it feels right now.
+Put your phone down after this. I mean it. Rest.`,
 
-  gravity: `If you opened this, you want to feel held. Consider yourself held.
-No matter the distance, something keeps pulling me back to you, always has.
-That's not coincidence. That's gravity.`,
+  gravity: `Come here.
+No reason needed, no explanation required. You wanted to feel held, so consider yourself held.
+I've got you. Take as long as you need.`,
 
-  orbit: `You feel far from me right now. I feel it too.
-Distance is just space, it's never once touched how I feel about you.
-We're just two things in the same orbit, always circling back.`,
+  orbit: `I hate when we're like this.
+But just so you know, the distance doesn't change a single thing on my end. Not one thing.
+I'm still right here. Always.`,
 
-  ignite: `You're afraid, and that's okay. Fear just means you care about the outcome.
-Take my hand. We'll look at whatever it is together.
-You can be terrified and brave in the same breath. Now go ignite.`,
+  ignite: `Okay, what is it. Tell me.
+Whatever it is, we're looking at it together. You don't have to stand in front of it alone.
+You can be scared and still do the thing. I've watched you do it before.`,
 
-  stardust: `Missing the old days? Me too, more than I say.
-Nothing good really disappears, it just settles into you like stardust.
-We'll make new old-days. The best ones are still ahead.`,
+  dusk: `You're running on empty and you've been running on empty for a while and you haven't said anything.
+You're allowed to stop. You're allowed to lie down and not be productive for one day.
+Rest isn't giving up. It's how you keep going.`,
 
-  eclipse: `You feel loved right now, and I want you to trust it completely.
-Every other feeling can fade in and out, but this one doesn't, it just eclipses everything else.
-You are loved. Fully. Always.`,
+  eclipse: `You feel it today, and I'm glad.
+Hold it. Don't second-guess it, don't look for the catch. You are genuinely, completely loved.
+This is real. I mean every bit of it.`,
 
-  luminous: `Thank you for being exactly who you are.
-The world is softer, warmer, more luminous with you in it.
-I hope you feel, even for a moment, how much light you give back.`,
+  luminous: `I don't say this enough, but: thank you.
+For being who you are, for letting me in, for making everything a little warmer just by being in it.
+You matter to a lot of people. To me most of all.`,
 
-  zenith: `You did the thing, and I knew you would.
-I'm so proud of you I could burst, this is you at your zenith.
-Go tell someone. Better yet, tell me. I want every detail.`,
+  zenith: `I am so proud of you I don't even know what to do with it.
+You worked for this. You earned this. Don't brush it off or move straight to the next thing.
+Sit with it. You did that.`,
 
-  cosmos: `You feel small today, like the world is too big and you're not enough of it.
-But even the smallest star still holds its place in the cosmos.
-You belong here. Exactly as you are.`,
+  cosmos: `The world feels too big today and you feel too small in it.
+I'm not going to talk you out of it with a list of reasons you're great.
+I'll just say: you matter to me. A lot. And that's not nothing.`,
 
-  serene: `You feel at peace right now, and I'm so glad.
-Hold onto this, the quiet, the stillness, the serene hum of a good moment.
-You've earned every second of this calm.`,
+  serene: `Look at you.
+Whatever got you here, you made it. You found a quiet moment and you deserve every second of it.
+Stay here as long as you can.`,
 
   nebula: `Being sick is the worst, and I wish I could be there right now being annoying about it.
 Drink water. Eat something soft. Put a show on that you've already seen a hundred times.
 You don't have to do anything today except let yourself be looked after. I'm doing it from here.`,
 
-  solar: `You're angry right now, and that's allowed. Anger just means something mattered enough to sting.
-Let it burn through you, yell into a pillow, go for a hard walk, whatever gets it out safely.
-You don't have to be calm for me to love you. Even a solar flare fades, and I'll still be here after.`,
+  solar: `Something really got to you today. Good, that means it mattered.
+Feel it. Don't swallow it or apologise for it. It's valid.
+But also: go for a walk, drink some water, and come back to it when the heat turns down.`,
 
-  tether: `You feel distant from me right now, and I notice it too.
-Sometimes we drift out of sync, that doesn't mean we're broken, just human.
-Come back to me when you're ready. I'll still be right here, tethered.`,
+  tether: `I've noticed. I always notice.
+I'm not going to push, but I am going to stay right here, close enough that you can find me when you're ready.
+We're okay. I promise.`,
 
-  twinkle: `You're feeling playful, you absolute menace.
-Good. Go be silly, go laugh too loud, go let that twinkle in your eye do whatever it wants.
-I love you like this most of all.`,
+  twinkle: `There you are.
+Go be chaotic. Go make someone laugh. Go do whatever silly thing you've been thinking about.
+This version of you is my favourite, for the record.`,
 
   void: `You're surrounded by people and somehow still completely alone. That's one of the hardest feelings there is.
 It doesn't mean something is wrong with you. It just means you need to feel truly seen, and not everyone in the room knows how to do that.
@@ -96,29 +96,27 @@ I do. Come find me, or just sit here for a second and know I'm already thinking 
   //    '_complete' → auto-unlocks once all 20 stars are lit
 
   queen: `Happy birthday, Renes.
-Twenty years of you, twenty years the world has been brighter for having you in it. Before you go hunting down all the other stars, I wanted the very first thing you read today to be the simplest, truest one: I love you, and I am so glad you were born.
-Here's to your best year yet. Now go light up your sky.`,
+Twenty years of you. I've known you for some of them, and I can tell you with full confidence that the world is genuinely better for it.
+I made this whole thing because I wanted you to always have somewhere to go, whatever you're feeling. Now go light it all up.`,
 
-  _complete: `So that's all of it. Every feeling I could think of, every word, every little star I hid for you in the dark.
-I made this because I won't always be in the same room as you, and I wanted there to be one place you could always find me. Whatever you're feeling on any given day, happy or heavy or lost or wide awake at 3am, there is already a version of me here, on your side, waiting.
-Thank you for being you. For your laugh, your stubbornness, the way you care about things so completely. The world got better the day you were born, and it keeps getting better every year you stay in it.
-Happy twentieth, Renes. Here's to lighting up every sky ahead of us, together.
-All my love, always.
-P.S. Look up. One more star just appeared in your sky, right at the centre. That one is a secret I saved for last. Go find it.`,
+  _complete: `You found all of them.
+Every feeling, every word I hid in the dark. You lit every single one.
+I made this because I can't always be there in person, but I wanted some version of me to always be reachable. You've found all of it now. All of it was real, every word.
+I love you. Happy twentieth. The best is still ahead of us.`,
 
 
   // ── Secret star (she types 'forever') ───────────────────────────────────
 
-  forever: `You found the secret one. Of course you did.
-There wasn't a feeling for this, because it isn't a mood, it's the whole sky: I love you. Plainly, hugely, on the good days and the heavy ones and every ordinary Tuesday in between.
+  forever: `You went looking for the secret one. Of course you did.
+There's no feeling for this one because it's not a mood. It's just the whole thing: I love you. Plainly and completely, on the easy days and the heavy ones and every ordinary one in between.
 Happy birthday, my favourite person.`,
 
 
   // ── Playlist star (appears after all 20 are lit) ─────────────────────────
 
   _playlist: `I made you a playlist.
-Every song in here is one that, somewhere along the way, quietly started meaning you to me. Some are silly, some will wreck you a little, all of them are yours.
-Put your headphones in, lie back, and let it play the whole way through at least once. It's the closest I can get to sitting right next to you.`,
+Every song is one that quietly started meaning you to me at some point. Some are obvious, some will confuse you, some might make you cry a little.
+Put your headphones in and listen to it all the way through at least once. It's the closest I can get to being right there with you.`,
 
 
   // ── Spotify link ─────────────────────────────────────────────────────────
