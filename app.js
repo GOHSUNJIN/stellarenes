@@ -26,11 +26,14 @@ window.AppMethods = {
   getDeviceId(){
     if(this._did) return this._did;
     let did='';
+    // Check localStorage first, then cookie (cookie survives a localStorage clear)
     try{ did=localStorage.getItem('renes-device-id')||''; }catch(e){}
+    if(!did){ try{ const m=document.cookie.match(/(?:^|;\s*)renes-did=([^;]+)/); if(m) did=m[1]; }catch(e){} }
     if(!did){
       try{ did=crypto.randomUUID(); }catch(e){ did=(Math.random().toString(36)+Date.now().toString(36)).slice(0,20); }
-      try{ localStorage.setItem('renes-device-id',did); }catch(e){}
     }
+    try{ localStorage.setItem('renes-device-id',did); }catch(e){}
+    try{ const exp=new Date(); exp.setFullYear(exp.getFullYear()+2); document.cookie='renes-did='+did+';expires='+exp.toUTCString()+';path=/;SameSite=Lax'; }catch(e){}
     this._did=did; return did;
   },
   getSupabase(){
@@ -94,41 +97,30 @@ window.AppMethods = {
     if(this.state.muted||this._amb) return;
     const ac=this.initAudio(); if(!ac) return;
     if(ac.state==='suspended'){ try{ac.resume();}catch(e){} }
-    const master=ac.createGain(); master.gain.value=0.0001; master.connect(ac.destination);
-    const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=680; lp.Q.value=0.5; lp.connect(master);
-    const freqs=[65.41,98.00,164.81,246.94,329.63];
-    const oscs=freqs.map((f,i)=>{ const o=ac.createOscillator(); o.type=(i<2?'sine':'triangle'); o.frequency.value=f; o.detune.value=(i%2?5:-5); const g=ac.createGain(); g.gain.value=(i<2?0.5:0.22)/freqs.length; o.connect(g); g.connect(lp); o.start(); return o; });
-    const lfo=ac.createOscillator(); lfo.frequency.value=0.06; const lfoG=ac.createGain(); lfoG.gain.value=0.02; lfo.connect(lfoG); lfoG.connect(master.gain); lfo.start();
-    master.gain.setTargetAtTime(0.05, ac.currentTime, 4);
-    const chimeBus=ac.createGain(); chimeBus.gain.value=0.0001; chimeBus.connect(ac.destination);
-    chimeBus.gain.setTargetAtTime(0.11, ac.currentTime, 5);
-    const delay=ac.createDelay(2); delay.delayTime.value=0.42;
-    const feedback=ac.createGain(); feedback.gain.value=0.34;
-    const delayLp=ac.createBiquadFilter(); delayLp.type='lowpass'; delayLp.frequency.value=2600;
-    chimeBus.connect(delay); delay.connect(delayLp); delayLp.connect(feedback); feedback.connect(delay); delayLp.connect(ac.destination);
-    const scale=[523.25,587.33,659.25,783.99,880,987.77,1174.66,1318.5];
-    const playChime=()=>{
-      if(!this._amb||this.state.muted) return;
-      const ac2=this._actx; if(!ac2) return;
-      const notes=(Math.random()<0.3)?2:1;
-      for(let k=0;k<notes;k++){
-        const f=scale[Math.floor(Math.random()*scale.length)];
-        const o=ac2.createOscillator(), g=ac2.createGain();
-        o.type='sine'; o.frequency.value=f;
-        const t=ac2.currentTime+k*0.16;
-        g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.55,t+0.06); g.gain.exponentialRampToValueAtTime(0.0001,t+2.8);
-        o.connect(g); g.connect(chimeBus); o.start(t); o.stop(t+3);
-      }
-      this._chimeT=setTimeout(playChime, 2600+Math.random()*4200);
-    };
-    this._chimeT=setTimeout(playChime, 2000);
-    this._amb={master,oscs,lfo,chimeBus};
+    if(!this._audio){
+      this._audio=new Audio('./music.mp3');
+      this._audio.loop=true;
+      try{ this._audio.crossOrigin='anonymous'; }catch(e){}
+    }
+    if(!this._ambGain){
+      try{
+        const src=ac.createMediaElementSource(this._audio);
+        this._ambGain=ac.createGain();
+        src.connect(this._ambGain); this._ambGain.connect(ac.destination);
+      }catch(e){ return; }
+    }
+    try{ this._ambGain.gain.cancelScheduledValues(0); }catch(e){}
+    this._ambGain.gain.setValueAtTime(0.0001,ac.currentTime);
+    this._ambGain.gain.exponentialRampToValueAtTime(0.55,ac.currentTime+4);
+    this._audio.play().catch(()=>{});
+    this._amb=true;
   },
   stopAmbient(){
-    const a=this._amb; if(!a) return;
-    const ac=this._actx; this._amb=null; clearTimeout(this._chimeT);
-    try{ a.master.gain.setTargetAtTime(0.0001,ac.currentTime,1.0); a.chimeBus.gain.setTargetAtTime(0.0001,ac.currentTime,1.0); }catch(e){}
-    setTimeout(()=>{ try{ a.oscs.forEach(o=>o.stop()); a.lfo.stop(); }catch(e){} }, 2500);
+    if(!this._amb) return; this._amb=null;
+    if(this._ambGain&&this._actx){
+      try{ this._ambGain.gain.cancelScheduledValues(0); this._ambGain.gain.setTargetAtTime(0.0001,this._actx.currentTime,0.8); }catch(e){}
+    }
+    setTimeout(()=>{ try{ if(this._audio) this._audio.pause(); }catch(e){} },2000);
   },
 
   // ── Canvas & particles ───────────────────────────────────────────────────
