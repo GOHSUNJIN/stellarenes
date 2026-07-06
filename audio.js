@@ -1,0 +1,66 @@
+// ── Audio engine ───────────────────────────────────────────────────────────
+// Web Audio API tone generation and the ambient music player (music.mp3).
+
+window.AppMethods = window.AppMethods || {};
+Object.assign(window.AppMethods, {
+
+  initAudio() {
+    if (this._actx) return this._actx;
+    try { this._actx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { this._actx = null; }
+    return this._actx;
+  },
+
+  playTones(freqs, opts) {
+    if (this.state.muted) return;
+    const ac = this.initAudio(); if (!ac) return;
+    if (ac.state === 'suspended') { try { ac.resume(); } catch(e) {} }
+    const now = ac.currentTime, stagger = (opts && opts.stagger) || 0.08, warm = opts && opts.warm, peak = (opts && opts.peak) || 0.15;
+    freqs.forEach((f, i) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = warm ? 'triangle' : 'sine';
+      o.frequency.value = f;
+      const t = now + i * stagger;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(peak, t + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
+      o.connect(g); g.connect(ac.destination);
+      o.start(t); o.stop(t + 1.2);
+    });
+  },
+
+  playUnlock()   { this.playTones([659.25, 987.77, 1318.5],           { stagger: 0.06, peak: 0.12 }); },
+  playBirthday() { this.playTones([523.25, 659.25, 783.99, 1046.5, 1318.5], { stagger: 0.11, warm: true, peak: 0.16 }); },
+
+  startAmbient() {
+    if (this.state.muted || this._amb) return;
+    const ac = this.initAudio(); if (!ac) return;
+    if (ac.state === 'suspended') { try { ac.resume(); } catch(e) {} }
+    if (!this._audio) {
+      this._audio = new Audio();
+      this._audio.loop = true;
+      this._audio.src = './music.mp3';
+    }
+    if (!this._ambGain) {
+      try {
+        const src = ac.createMediaElementSource(this._audio);
+        this._ambGain = ac.createGain();
+        src.connect(this._ambGain); this._ambGain.connect(ac.destination);
+      } catch(e) { return; }
+    }
+    try { this._ambGain.gain.cancelScheduledValues(0); } catch(e) {}
+    this._ambGain.gain.setValueAtTime(0.0001, ac.currentTime);
+    this._ambGain.gain.exponentialRampToValueAtTime(0.55, ac.currentTime + 4);
+    this._amb = true;
+    this._audio.play().catch(() => { this._amb = null; });
+  },
+
+  stopAmbient() {
+    if (!this._amb) return;
+    this._amb = null;
+    if (this._ambGain && this._actx) {
+      try { this._ambGain.gain.cancelScheduledValues(0); this._ambGain.gain.setTargetAtTime(0.0001, this._actx.currentTime, 0.8); } catch(e) {}
+    }
+    setTimeout(() => { try { if (this._audio) this._audio.pause(); } catch(e) {} }, 2000);
+  },
+
+});

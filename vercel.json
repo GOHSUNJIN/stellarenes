@@ -8,7 +8,13 @@
       ]
     },
     {
-      "source": "/(app|data|messages|config|support|sw)\\.js",
+      "source": "/(app|audio|canvas|sync|data|messages|config|support|sw)\\.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    },
+    {
+      "source": "/(styles|animations)\\.css",
       "headers": [
         { "key": "Cache-Control", "value": "no-store" }
       ]

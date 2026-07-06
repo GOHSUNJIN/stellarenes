@@ -74,17 +74,21 @@ Twenty years of you...`,
 
 ```
 stellarenes/
-├── messages.js   — all message text (the only file you edit)
-├── data.js       — star config: positions, colours, codes (rarely touched)
-├── index.html    — HTML template + DC component class
-├── app.js        — app logic: render, audio, canvas, particles, lifecycle
-├── styles.css    — layout, animations, responsive breakpoints
-├── config.js     — Supabase URL + anon key
-├── support.js    — Framer DC runtime (do not edit)
-├── sw.js         — service worker (auto-updates iOS home screen app)
-├── favicon.svg   — browser tab icon
+├── messages.js      — all message text (the only file you edit)
+├── data.js          — star config: positions, colours, codes (rarely touched)
+├── index.html       — HTML template + DC component class + arrow handlers
+├── app.js           — core logic: render, lifecycle, data helpers, interaction
+├── audio.js         — Web Audio tones + ambient music player
+├── canvas.js        — background star field, shooting stars, burst particles
+├── sync.js          — Supabase read/write + realtime subscription
+├── styles.css       — layout, responsive breakpoints, accessibility
+├── animations.css   — all @keyframes animations
+├── config.js        — Supabase URL + anon key
+├── support.js       — Framer DC runtime (do not edit)
+├── sw.js            — service worker (auto-updates iOS home screen app)
+├── favicon.svg      — browser tab icon
 ├── apple-touch-icon.png — iOS home screen icon
-└── vercel.json   — cache headers config
+└── vercel.json      — cache headers config
 ```
 
 ---

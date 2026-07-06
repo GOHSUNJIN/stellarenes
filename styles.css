@@ -58,18 +58,4 @@ button{touch-action:manipulation}
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.06s !important}
 }
 
-/* ── Animations ───────────────────────────────────────────────────────── */
-@keyframes orbIn     {from{opacity:0;transform:translate(-50%,-50%) scale(.2)}   to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
-@keyframes popIn     {from{opacity:0;transform:scale(.4)}                         to{opacity:1;transform:scale(1)}}
-@keyframes breathe   {0%,100%{scale:1;opacity:.9}                                  50%{scale:1.14;opacity:1}}
-@keyframes haloPulse {0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)} 50%{opacity:.85;transform:translate(-50%,-50%) scale(1.18)}}
-@keyframes twinkle   {0%,100%{opacity:.18;transform:translate(-50%,-50%) scale(.85)} 50%{opacity:.5;transform:translate(-50%,-50%) scale(1.05)}}
-@keyframes floatNeb  {0%,100%{transform:translate(0,0) scale(1)}                 33%{transform:translate(40px,-30px) scale(1.08)}  66%{transform:translate(-30px,25px) scale(.95)}}
-@keyframes backdropIn{from{opacity:0}                                              to{opacity:1}}
-@keyframes cardIn    {from{opacity:0;transform:translateY(26px) scale(.94)}       to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes textRise  {from{opacity:0;transform:translateY(14px)}                  to{opacity:1;transform:translateY(0)}}
-@keyframes textRiseB {from{opacity:0;transform:translateY(14px)}                  to{opacity:1;transform:translateY(0)}}
-@keyframes spinSlow  {to{transform:rotate(360deg)}}
-@keyframes fadeUp    {from{opacity:0;transform:translateY(16px)}                  to{opacity:1;transform:translateY(0)}}
-@keyframes labelGlow {0%,100%{opacity:.7}                                         50%{opacity:1}}
-@keyframes toastIn   {from{opacity:0;transform:translateY(-14px)}                 to{opacity:1;transform:translateY(0)}}
+/* Animations → animations.css */
