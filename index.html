@@ -349,7 +349,9 @@ class Component extends DCLogic {
   closeShare = () => this.setState({shareOpen:false});
 
   submit = () => {
-    const v=(this.state.codeInput||'').trim().toLowerCase(); if(!v) return;
+    if(this._submitting) return;
+    this._submitting=true; setTimeout(()=>{ this._submitting=false; },800);
+    const v=(this.state.codeInput||'').trim().toLowerCase(); if(!v){ this._submitting=false; return; }
     let note=null, emo=null;
     for(const e of [...this.DATA,this.BDAY,this.EGG]){ const n=(e.notes||[]).find(x=>x.code&&x.code[0]!=='_'&&x.code.toLowerCase()===v); if(n){ note=n; emo=e; break; } }
     if(!note){ return; }

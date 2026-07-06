@@ -23,6 +23,16 @@ window.AppMethods = {
   },
 
   // ── Supabase ─────────────────────────────────────────────────────────────
+  getDeviceId(){
+    if(this._did) return this._did;
+    let did='';
+    try{ did=localStorage.getItem('renes-device-id')||''; }catch(e){}
+    if(!did){
+      try{ did=crypto.randomUUID(); }catch(e){ did=(Math.random().toString(36)+Date.now().toString(36)).slice(0,20); }
+      try{ localStorage.setItem('renes-device-id',did); }catch(e){}
+    }
+    this._did=did; return did;
+  },
   getSupabase(){
     if(this._sb) return this._sb;
     let url='', key='';
@@ -33,11 +43,10 @@ window.AppMethods = {
   },
   syncFromSupabase(){
     const sb=this.getSupabase(); if(!sb) return;
-    sb.from('unlocks').select('code, unlocked_at').then(({data,error})=>{
+    sb.from('unlocks').select('code, unlocked_at').eq('device_id',this.getDeviceId()).then(({data,error})=>{
       if(error||!data) return;
       const unlocked={};
       data.forEach(row=>{ unlocked[row.code]=new Date(row.unlocked_at).getTime(); });
-      // _complete is computed, not stored — check if all 20 stars are lit
       const allDone=this.DATA.every(e=>(e.notes||[]).some(n=>unlocked[n.code]));
       if(allDone) unlocked['_complete']=true;
       this.save(unlocked);
@@ -46,17 +55,16 @@ window.AppMethods = {
   },
   saveUnlockToSupabase(code, starId, starTitle){
     const sb=this.getSupabase(); if(!sb) return;
-    // Internal codes (starting with _) are not stored in Supabase
     if(code[0]==='_') return;
     sb.from('unlocks')
-      .upsert({ code, star_id:starId, star_title:starTitle }, { onConflict:'code' })
+      .upsert({ code, star_id:starId, star_title:starTitle, device_id:this.getDeviceId() }, { onConflict:'code,device_id' })
       .then(({error})=>{ if(error) console.warn('Supabase save failed:', error.message); });
   },
   subscribeToRealtime(){
     const sb=this.getSupabase(); if(!sb) return;
-    // Re-sync whenever any row is added or deleted (creator undoes a star)
-    sb.channel('stellarenes-unlocks')
-      .on('postgres_changes', { event:'*', schema:'public', table:'unlocks' },
+    const did=this.getDeviceId();
+    sb.channel('stellarenes-'+did)
+      .on('postgres_changes',{ event:'*', schema:'public', table:'unlocks', filter:'device_id=eq.'+did },
         ()=>this.syncFromSupabase())
       .subscribe();
   },
@@ -191,17 +199,17 @@ window.AppMethods = {
     this._onMove=(e)=>{ const w=window.innerWidth||1, h=window.innerHeight||1; this._par.tx=(e.clientX/w-0.5)*16; this._par.ty=(e.clientY/h-0.5)*16; };
     window.addEventListener('resize', this._onResize);
     if(!this.reduced) window.addEventListener('mousemove', this._onMove);
-    // Load latest state from Supabase and subscribe to live changes.
-    // intro always shows, so audio starts on dismissIntro (user tap).
+    this._onVisible=()=>{ if(document.visibilityState==='visible'&&!this.state.muted&&this._actx){ try{this._actx.resume();}catch(e){} if(!this._amb) this.startAmbient(); } };
+    document.addEventListener('visibilitychange',this._onVisible);
     this.syncFromSupabase();
     this.subscribeToRealtime();
   },
   componentWillUnmount(){
     window.removeEventListener('resize', this._onResize);
     window.removeEventListener('mousemove', this._onMove);
+    if(this._onVisible) document.removeEventListener('visibilitychange',this._onVisible);
     if(this._ambGesture){ window.removeEventListener('pointerdown',this._ambGesture); window.removeEventListener('keydown',this._ambGesture); }
     this.stopAmbient(); clearTimeout(this._idle); clearTimeout(this._mt); cancelAnimationFrame(this._raf);
-    // Clean up Supabase channel
     const sb=this.getSupabase();
     if(sb) sb.removeAllChannels();
   },
