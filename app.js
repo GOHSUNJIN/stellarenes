@@ -10,6 +10,15 @@ Object.assign(window.AppMethods, {
   save(u)     { try { localStorage.setItem('renes-gift-v2', JSON.stringify(u)); } catch(e) {} },
   loadMuted() { try { return localStorage.getItem('renes-muted') === '1'; } catch(e) { return false; } },
 
+  // ── Gyroscope (iOS requires permission from a user gesture) ─────────────
+  requestGyroscope() {
+    if (typeof DeviceOrientationEvent === 'undefined' ||
+        typeof DeviceOrientationEvent.requestPermission !== 'function') return;
+    DeviceOrientationEvent.requestPermission()
+      .then(s => { if (s === 'granted') window.addEventListener('deviceorientation', this._onOrient); })
+      .catch(() => {});
+  },
+
   // ── UI helpers ───────────────────────────────────────────────────────────
   showMilestone(txt) {
     clearTimeout(this._mt);
@@ -48,9 +57,21 @@ Object.assign(window.AppMethods, {
       }
     };
 
+    this._onOrient = (e) => {
+      const g = e.gamma || 0, b = e.beta || 0;
+      if (this._orientBase == null) this._orientBase = b;
+      this._par.tx = Math.max(-12, Math.min(12, g * 0.35));
+      this._par.ty = Math.max(-12, Math.min(12, (b - this._orientBase) * 0.25));
+    };
+
     window.addEventListener('resize', this._onResize);
     if (!this.reduced) window.addEventListener('mousemove', this._onMove);
     document.addEventListener('visibilitychange', this._onVisible);
+    // Non-iOS Android: attach gyroscope immediately (no permission needed)
+    if (typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission !== 'function') {
+      window.addEventListener('deviceorientation', this._onOrient);
+    }
     this.syncFromSupabase();
     this.subscribeToRealtime();
   },
@@ -58,6 +79,7 @@ Object.assign(window.AppMethods, {
   componentWillUnmount() {
     window.removeEventListener('resize', this._onResize);
     window.removeEventListener('mousemove', this._onMove);
+    if (this._onOrient) window.removeEventListener('deviceorientation', this._onOrient);
     if (this._onVisible) document.removeEventListener('visibilitychange', this._onVisible);
     this.stopAmbient();
     clearTimeout(this._idle); clearTimeout(this._mt); clearTimeout(this._ch); clearTimeout(this._hk); clearTimeout(this._sh);
