@@ -1,5 +1,6 @@
 /* ── Reset & base ─────────────────────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html,body{height:100%}
 html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 html,body{scrollbar-width:none;-ms-overflow-style:none}
