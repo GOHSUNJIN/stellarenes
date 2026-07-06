@@ -8,9 +8,9 @@
       ]
     },
     {
-      "source": "/(app|data|config)\\.js",
+      "source": "/(app|data|config|support)\\.js",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache" }
+        { "key": "Cache-Control", "value": "no-store" }
       ]
     },
     {
