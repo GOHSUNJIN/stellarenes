@@ -11,6 +11,8 @@
 <meta property="og:type" content="website">
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
 <script src="./support.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="./config.js"></script>
 <script src="./data.js"></script>
 <script src="./app.js"></script>
 <link rel="stylesheet" href="./styles.css">
@@ -40,15 +42,6 @@
   <!-- Archive button -->
   <sc-if value="{{ hasFound }}" hint-placeholder-val="{{ false }}">
     <button onClick="{{ toggleList }}" style="position:absolute;top:16px;left:18px;z-index:7;display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(180,160,255,.25);background:rgba(20,16,40,.5);color:rgba(228,222,246,.85);cursor:pointer;padding:8px 17px;border-radius:30px;font-family:'Outfit',sans-serif;font-size:12.5px;letter-spacing:.04em;transition:border-color .2s,color .2s,background .2s" style-hover="border-color:rgba(180,160,255,.55);color:#fff;background:rgba(255,255,255,.05)"><span style="color:#c4a9ff">&#10022;</span> your archive<span style="font-family:'Space Mono',monospace;font-size:11px;color:rgba(196,169,255,.7)">{{ foundCount }}</span></button>
-  </sc-if>
-
-  <!-- Dev toolbar (visible when devMode() returns true) -->
-  <sc-if value="{{ dev }}" hint-placeholder-val="{{ false }}">
-  <div style="position:absolute;bottom:16px;left:18px;z-index:6;display:flex;gap:8px">
-    <button onClick="{{ resetAll }}"   title="Reset all unlocks" style="border:1px solid rgba(220,214,240,.16);background:rgba(20,16,40,.5);color:rgba(220,214,240,.6);cursor:pointer;padding:7px 14px;border-radius:30px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;transition:border-color .2s,color .2s" style-hover="border-color:rgba(255,160,160,.6);color:#ffb3b3">reset</button>
-    <button onClick="{{ replayIntro }}" title="Show intro again"   style="border:1px solid rgba(180,160,255,.2);background:rgba(20,16,40,.5);color:rgba(220,214,240,.6);cursor:pointer;padding:7px 14px;border-radius:30px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;transition:border-color .2s,color .2s" style-hover="border-color:rgba(180,160,255,.5);color:#efeaff">intro</button>
-    <button onClick="{{ lightAll }}"   title="Light all 20 stars"  style="border:1px solid rgba(255,210,122,.3);background:rgba(20,16,40,.5);color:rgba(255,225,170,.7);cursor:pointer;padding:7px 14px;border-radius:30px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;transition:border-color .2s,color .2s" style-hover="border-color:rgba(255,210,122,.7);color:#ffe6ad">light all</button>
-  </div>
   </sc-if>
 
   <!-- Top-right controls: egg + sound toggle -->
@@ -252,7 +245,7 @@ class Component extends DCLogic {
 
   // ── Initial state ────────────────────────────────────────────────────
   state = {
-    unlocked:  this.load(),
+    unlocked:  this.load(),   // localStorage cache; Supabase overrides on mount
     codeInput: '',
     error:     false,
     active:    null,
@@ -260,7 +253,7 @@ class Component extends DCLogic {
     hintMsg:   '',
     finale:    false,
     muted:     this.loadMuted(),
-    showIntro: (!this.devMode()),
+    showIntro: true,          // always plays on every visit
     milestone: '',
     isWide:    (typeof window !== 'undefined' && window.innerWidth >= 681),
     listOpen:  false
@@ -310,14 +303,9 @@ class Component extends DCLogic {
   };
 
   // ── Arrow event handlers ─────────────────────────────────────────────
-  resetAll = () => {
-    try{ localStorage.removeItem('renes-gift-v2'); }catch(e){}
-    if(this.particles) this.particles.length=0;
-    this.setState({ unlocked:{}, active:null, noteIndex:0, finale:false, codeInput:'', error:false, hintMsg:'' });
-  };
 
+  // Intro dismissal — no localStorage tracking, so intro plays every visit
   dismissIntro = () => {
-    try{ localStorage.setItem('renes-intro-seen','1'); }catch(e){}
     this.initAudio(); this.startAmbient();
     const el=this.introEl;
     const done=()=>{ if(this._introClosing){ this._introClosing=false; this.setState({showIntro:false}, ()=>{ if(this.inputEl) this.inputEl.focus(); this.armIdle(); }); } };
@@ -334,18 +322,7 @@ class Component extends DCLogic {
     this.setState({muted:m}, ()=>{ if(m) this.stopAmbient(); else this.startAmbient(); });
   };
 
-  toggleList  = () => this.setState(s=>({listOpen:!s.listOpen}));
-  replayIntro = () => { try{localStorage.setItem('renes-intro-seen','');}catch(e){} clearTimeout(this._idle); this._introClosing=false; this.setState({showIntro:true, active:null}); };
-
-  lightAll = () => {
-    const unlocked={...this.state.unlocked}, now=Date.now();
-    this.DATA.forEach(e=>(e.notes||[]).forEach(n=>{ if(n.code&&n.code[0]!=='_') unlocked[n.code]=now; }));
-    unlocked['_complete']=true; this.save(unlocked);
-    this.setState({unlocked, finale:true, active:null});
-    setTimeout(()=>{ this.celebrate(); this.playBirthday(); this.burstAt('birthday'); }, 300);
-    const bnotes=this.BDAY.notes.filter(n=>unlocked[n.code]); const bidx=bnotes.findIndex(n=>n.code==='_complete');
-    setTimeout(()=>this.setState({active:'birthday', noteIndex:bidx<0?0:bidx}), 950);
-  };
+  toggleList = () => this.setState(s=>({listOpen:!s.listOpen}));
 
   submit = () => {
     const v=(this.state.codeInput||'').trim().toLowerCase(); if(!v) return;
@@ -361,10 +338,15 @@ class Component extends DCLogic {
     }
     const prevCount=this.count();
     const unlocked={...this.state.unlocked,[note.code]:Date.now()};
-    if(emo.id==='egg'){ this.save(unlocked); this.setState({unlocked, codeInput:'', error:false, hintMsg:''}); this.playBirthday(); this.heartShower(); setTimeout(()=>this.setState({active:'egg', noteIndex:0}),700); return; }
+    if(emo.id==='egg'){
+      this.save(unlocked);
+      this.saveUnlockToSupabase(note.code, emo.id, emo.title);
+      this.setState({unlocked, codeInput:'', error:false, hintMsg:''}); this.playBirthday(); this.heartShower(); setTimeout(()=>this.setState({active:'egg', noteIndex:0}),700); return;
+    }
     const willBeAll=this.DATA.every(e=>(e.notes||[]).some(n=>unlocked[n.code]));
     if(willBeAll) unlocked['_complete']=true;
     this.save(unlocked);
+    this.saveUnlockToSupabase(note.code, emo.id, emo.title);
     const newCount=this.DATA.filter(e=>(e.notes||[]).some(n=>unlocked[n.code])).length;
     this.setState({unlocked, codeInput:'', error:false, hintMsg:''}); clearTimeout(this._idle);
     if(emo.id==='birthday') this.playBirthday(); else this.playUnlock();
@@ -400,7 +382,7 @@ class Component extends DCLogic {
   shuffleNote = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n<2) return; let r=this.state.noteIndex; while(r===this.state.noteIndex) r=Math.floor(Math.random()*n); this.setState({noteIndex:r}); };
 }
 
-// Mix in all the regular methods from app.js
+// Mix in all regular methods from app.js
 Object.assign(Component.prototype, window.AppMethods);
 </script>
 

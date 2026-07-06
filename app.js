@@ -1,22 +1,63 @@
 // ── App logic — mixed into Component.prototype at the bottom of index.html ──
-// These are all the regular (non-arrow) methods. Arrow methods that need
-// a bound `this` stay as class fields inside the DC script in index.html.
+// Regular (non-arrow) methods live here. Arrow methods that need a bound
+// `this` stay as class fields inside the DC script in index.html.
 
 window.AppMethods = {
 
-  // ── Persistence ─────────────────────────────────────────────────────────
-  load()    { try{ return JSON.parse(localStorage.getItem('renes-gift-v2'))||{}; }catch(e){ return {}; } },
-  save(u)   { try{ localStorage.setItem('renes-gift-v2', JSON.stringify(u)); }catch(e){} },
-  devMode() { return true; /* set to false (or remove) to hide dev toolbar */ },
-  introSeen()  { try{ return !!localStorage.getItem('renes-intro-seen'); }catch(e){ return false; } },
-  loadMuted()  { try{ return localStorage.getItem('renes-muted')==='1'; }catch(e){ return false; } },
-  showMilestone(txt){ clearTimeout(this._mt); this.setState({milestone:txt}); this._mt=setTimeout(()=>this.setState({milestone:''}),5000); },
+  // ── Persistence (localStorage as offline cache) ──────────────────────────
+  load()      { try{ return JSON.parse(localStorage.getItem('renes-gift-v2'))||{}; }catch(e){ return {}; } },
+  save(u)     { try{ localStorage.setItem('renes-gift-v2', JSON.stringify(u)); }catch(e){} },
+  loadMuted() { try{ return localStorage.getItem('renes-muted')==='1'; }catch(e){ return false; } },
+
+  showMilestone(txt){
+    clearTimeout(this._mt);
+    this.setState({milestone:txt});
+    this._mt=setTimeout(()=>this.setState({milestone:''}),5000);
+  },
   armIdle(){
     clearTimeout(this._idle);
     this._idle=setTimeout(()=>{
       if(this.count()===0 && !this.state.active && !this.state.showIntro)
         this.setState({hintMsg:'✦ tap any star to see what it holds, or type a word'});
     }, 9000);
+  },
+
+  // ── Supabase ─────────────────────────────────────────────────────────────
+  getSupabase(){
+    if(this._sb) return this._sb;
+    if(!window.supabase||!window.SUPABASE_URL||!window.SUPABASE_KEY||
+       window.SUPABASE_URL.includes('your-project')) return null;
+    this._sb=window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+    return this._sb;
+  },
+  syncFromSupabase(){
+    const sb=this.getSupabase(); if(!sb) return;
+    sb.from('unlocks').select('code, unlocked_at').then(({data,error})=>{
+      if(error||!data) return;
+      const unlocked={};
+      data.forEach(row=>{ unlocked[row.code]=new Date(row.unlocked_at).getTime(); });
+      // _complete is computed, not stored — check if all 20 stars are lit
+      const allDone=this.DATA.every(e=>(e.notes||[]).some(n=>unlocked[n.code]));
+      if(allDone) unlocked['_complete']=true;
+      this.save(unlocked);
+      this.setState({ unlocked, finale:!!unlocked['_complete'] });
+    });
+  },
+  saveUnlockToSupabase(code, starId, starTitle){
+    const sb=this.getSupabase(); if(!sb) return;
+    // Internal codes (starting with _) are not stored in Supabase
+    if(code[0]==='_') return;
+    sb.from('unlocks')
+      .upsert({ code, star_id:starId, star_title:starTitle }, { onConflict:'code' })
+      .then(({error})=>{ if(error) console.warn('Supabase save failed:', error.message); });
+  },
+  subscribeToRealtime(){
+    const sb=this.getSupabase(); if(!sb) return;
+    // Re-sync whenever any row is added or deleted (creator undoes a star)
+    sb.channel('stellarenes-unlocks')
+      .on('postgres_changes', { event:'*', schema:'public', table:'unlocks' },
+        ()=>this.syncFromSupabase())
+      .subscribe();
   },
 
   // ── Audio engine ─────────────────────────────────────────────────────────
@@ -149,18 +190,19 @@ window.AppMethods = {
     this._onMove=(e)=>{ const w=window.innerWidth||1, h=window.innerHeight||1; this._par.tx=(e.clientX/w-0.5)*16; this._par.ty=(e.clientY/h-0.5)*16; };
     window.addEventListener('resize', this._onResize);
     if(!this.reduced) window.addEventListener('mousemove', this._onMove);
-    if(!this.state.showIntro){
-      setTimeout(()=>{ if(this.inputEl) this.inputEl.focus(); }, 400);
-      this.armIdle();
-      const g=()=>{ this.startAmbient(); window.removeEventListener('pointerdown',g); window.removeEventListener('keydown',g); };
-      this._ambGesture=g; window.addEventListener('pointerdown',g); window.addEventListener('keydown',g);
-    }
+    // Load latest state from Supabase and subscribe to live changes.
+    // intro always shows, so audio starts on dismissIntro (user tap).
+    this.syncFromSupabase();
+    this.subscribeToRealtime();
   },
   componentWillUnmount(){
     window.removeEventListener('resize', this._onResize);
     window.removeEventListener('mousemove', this._onMove);
     if(this._ambGesture){ window.removeEventListener('pointerdown',this._ambGesture); window.removeEventListener('keydown',this._ambGesture); }
     this.stopAmbient(); clearTimeout(this._idle); clearTimeout(this._mt); cancelAnimationFrame(this._raf);
+    // Clean up Supabase channel
+    const sb=this.getSupabase();
+    if(sb) sb.removeAllChannels();
   },
 
   // ── Data helpers ─────────────────────────────────────────────────────────
@@ -241,7 +283,7 @@ window.AppMethods = {
         onClick:()=>this.setState({active:f.e.id, noteIndex:idx<0?0:idx, listOpen:false}) };
     });
     const eggFound=!!this.state.unlocked['forever'];
-    return { count, total, foundTotal, orbs, lines, showCenter:bdayAwake, centerLocked:!bdayAwake, clickCenter:this.clickCenter, showPlaylist:(count>=total), openPlaylist:this.openPlaylist, showEgg:eggFound, openEgg:this.openEgg, foundList, hasFound:foundList.length>0, foundCount:foundList.length, listOpen:this.state.listOpen, toggleList:this.toggleList, modalOpen:!!active, active, openBday:this.openBday, closeMessage:this.closeMessage, stop:this.stop, submit:this.submit, onInput:this.onInput, onKey:this.onKey, resetAll:this.resetAll, replayIntro:this.replayIntro, lightAll:this.lightAll, setCanvas:this.setCanvas, setContainer:this.setContainer, setInput:this.setInput, setIntro:this.setIntro, codeInput:this.state.codeInput, hintMsg:this.state.hintMsg, dev:this.devMode(), muted:this.state.muted, soundOn:!this.state.muted, toggleMute:this.toggleMute, showIntro:this.state.showIntro, dismissIntro:this.dismissIntro, milestone:this.state.milestone, hasMilestone:!!this.state.milestone, inputStyle, barStyle, cardStyle };
+    return { count, total, foundTotal, orbs, lines, showCenter:bdayAwake, centerLocked:!bdayAwake, clickCenter:this.clickCenter, showPlaylist:(count>=total), openPlaylist:this.openPlaylist, showEgg:eggFound, openEgg:this.openEgg, foundList, hasFound:foundList.length>0, foundCount:foundList.length, listOpen:this.state.listOpen, toggleList:this.toggleList, modalOpen:!!active, active, openBday:this.openBday, closeMessage:this.closeMessage, stop:this.stop, submit:this.submit, onInput:this.onInput, onKey:this.onKey, setCanvas:this.setCanvas, setContainer:this.setContainer, setInput:this.setInput, setIntro:this.setIntro, codeInput:this.state.codeInput, hintMsg:this.state.hintMsg, muted:this.state.muted, soundOn:!this.state.muted, toggleMute:this.toggleMute, showIntro:this.state.showIntro, dismissIntro:this.dismissIntro, milestone:this.state.milestone, hasMilestone:!!this.state.milestone, inputStyle, barStyle, cardStyle };
   }
 
 };
