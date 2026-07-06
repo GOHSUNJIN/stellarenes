@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background -->
+  <circle cx="32" cy="32" r="32" fill="#0c0a1c"/>
+  <!-- Outer glow ring -->
+  <circle cx="32" cy="32" r="28" fill="none" stroke="#ffd27a" stroke-width="0.6" opacity="0.25"/>
+  <!-- Halo glow -->
+  <circle cx="32" cy="32" r="20" fill="#ffd27a" opacity="0.08"/>
+  <!-- 5-point star -->
+  <path d="M32 10 l4.5 10.6 11.5 1-8.8 7.6 2.7 11.3L32 35l-9.9 5.5 2.7-11.3L16 21.6l11.5-1z" fill="#ffd27a"/>
+  <!-- Sparkle top-right -->
+  <circle cx="50" cy="16" r="1.4" fill="#c4a9ff" opacity="0.8"/>
+  <!-- Sparkle bottom-left -->
+  <circle cx="14" cy="48" r="1.2" fill="#c4a9ff" opacity="0.7"/>
+  <!-- Sparkle top-left -->
+  <circle cx="18" cy="20" r="1" fill="#fff" opacity="0.6"/>
+  <!-- Sparkle bottom-right -->
+  <circle cx="48" cy="46" r="1" fill="#fff" opacity="0.5"/>
+</svg>

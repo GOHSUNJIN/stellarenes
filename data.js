@@ -33,7 +33,7 @@ window.STARS = {
     { id:'faraway', title:'When you feel far from me', when:'for the far-apart days', color:'hsl(330,68%,75%)', x:66, y:56.2,
       notes:[ { code:'orbit', text:`You feel far from me right now. I feel it too.\nDistance is just space, it’s never once touched how I feel about you.\nWe’re just two things in the same orbit, always circling back.` } ] },
 
-    { id:'afraid', title:'When you’re afraid', when:'for the trembling days', color:'hsl(10,72%,70%)', x:26.5, y:84,
+    { id:’afraid’, title:"When you’re afraid", when:’for the trembling days’, color:’hsl(10,72%,70%)’, x:26.5, y:84,
       notes:[ { code:'ignite', text:`You’re afraid, and that’s okay. Fear just means you care about the outcome.\nTake my hand. We’ll look at whatever it is together.\nYou can be terrified and brave in the same breath. Now go ignite.` } ] },
 
     { id:'nostalgic', title:'When you miss the old days', when:'for the looking-back days', color:'hsl(300,55%,76%)', x:73.5, y:84,
