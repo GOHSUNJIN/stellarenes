@@ -14,7 +14,7 @@
 <script>
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').then(reg => {
-      // Force update check every time the app comes to the foreground
+      reg.update().catch(()=>{});
       document.addEventListener('visibilitychange', () => {
         if(document.visibilityState === 'visible') reg.update().catch(()=>{});
       });
