@@ -23,7 +23,7 @@ window.STARS = {
     { id:'proud',       title:'When you feel proud',              when:'for the victory days',       color:'hsl(135,55%,68%)', x:73.9, y:37.6, notes:[ { code:'zenith',     text:M.zenith     } ] },
     { id:'small',       title:'When you feel small',              when:'for the quiet days',         color:'hsl(220,55%,72%)', x:50,   y:68.1, notes:[ { code:'cosmos',     text:M.cosmos     } ] },
     { id:'peace',       title:'When you feel at peace',           when:'for the still days',         color:'hsl(175,45%,70%)', x:61.7, y:76,   notes:[ { code:'serene',     text:M.serene     } ] },
-    { id:'free',        title:'When you feel free',               when:'for the wide-open days',     color:'hsl(28,75%,68%)',  x:45.1, y:23.5, notes:[ { code:'solstice',   text:M.solstice   } ] },
+    { id:'sick',        title:'When you feel sick',               when:'for the unwell days',        color:'hsl(195,45%,72%)', x:45.1, y:23.5, notes:[ { code:'nebula',     text:M.nebula     } ] },
     { id:'angry',       title:'When you feel angry',              when:'for the burning days',       color:'hsl(14,75%,64%)',  x:50,   y:10,   notes:[ { code:'solar',      text:M.solar      } ] },
     { id:'notokay',     title:'When you feel distant from me',    when:'for the drifting-apart days',color:'hsl(225,30%,62%)', x:59.9, y:37,   notes:[ { code:'tether',     text:M.tether     } ] },
     { id:'playful',     title:'When you feel playful',            when:'for the silly days',         color:'hsl(36,78%,68%)',  x:77,   y:47.2, notes:[ { code:'twinkle',    text:M.twinkle    } ] },

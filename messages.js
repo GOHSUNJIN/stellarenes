@@ -70,9 +70,9 @@ You belong here. Exactly as you are.`,
 Hold onto this, the quiet, the stillness, the serene hum of a good moment.
 You've earned every second of this calm.`,
 
-  solstice: `You feel free today, wide open, unburdened.
-Let it stretch as long as it wants to, like the longest day of summer.
-This is your solstice. Soak in every hour of it.`,
+  nebula: `Being sick is the worst, and I wish I could be there right now being annoying about it.
+Drink water. Eat something soft. Put a show on that you've already seen a hundred times.
+You don't have to do anything today except let yourself be looked after. I'm doing it from here.`,
 
   solar: `You're angry right now, and that's allowed. Anger just means something mattered enough to sting.
 Let it burn through you, yell into a pillow, go for a hard walk, whatever gets it out safely.

@@ -53,7 +53,7 @@ Twenty years of you...`,
 | `zenith` | When you feel proud |
 | `cosmos` | When you feel small |
 | `serene` | When you feel at peace |
-| `solstice` | When you feel free |
+| `nebula` | When you feel sick |
 | `solar` | When you feel angry |
 | `tether` | When you feel distant from me |
 | `twinkle` | When you feel playful |
