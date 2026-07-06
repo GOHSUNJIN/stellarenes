@@ -123,26 +123,6 @@ window.AppMethods = {
     setTimeout(()=>{ try{ if(this._audio) this._audio.pause(); }catch(e){} },2000);
   },
 
-  // ── Constellation lines (drawn on canvas to avoid SVG attribute warnings) ──
-  drawLines(ctx){
-    if(!this.containerEl||!this._P||!this.DATA.length) return;
-    const r=this.containerEl.getBoundingClientRect(), d=this.dpr, total=this.DATA.length;
-    const cx=x=>( r.left+r.width *x/100)*d;
-    const cy=y=>( r.top +r.height*y/100)*d;
-    ctx.save(); ctx.lineWidth=0.8*d;
-    for(let i=0;i<total;i++){
-      const ni=(i+1)%total;
-      const both=this.unlockedNotesFor(this.DATA[i]).length>0&&this.unlockedNotesFor(this.DATA[ni]).length>0;
-      ctx.strokeStyle=both?'rgba(255,150,200,.5)':'rgba(255,150,200,.13)';
-      ctx.globalAlpha=1;
-      ctx.beginPath();
-      ctx.moveTo(cx(this._P[i].x),cy(this._P[i].y));
-      ctx.lineTo(cx(this._P[ni].x),cy(this._P[ni].y));
-      ctx.stroke();
-    }
-    ctx.restore();
-  },
-
   // ── Canvas & particles ───────────────────────────────────────────────────
   drawHeart(ctx,x,y,s,color){
     ctx.save(); ctx.translate(x,y); const k=s/16; ctx.scale(k,k); ctx.fillStyle=color;
