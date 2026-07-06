@@ -45,10 +45,6 @@ Object.assign(window.AppMethods, {
       this.sizeCanvas();
       const wide = window.innerWidth >= 681;
       if (wide !== this.state.isWide) this.setState({ isWide: wide });
-      if (_isTouch) {
-        const lnd = window.innerWidth > window.innerHeight;
-        if (lnd !== this.state.landscapeWarning) this.setState({ landscapeWarning: lnd });
-      }
       // iOS rotation animation takes ~300ms to settle — re-sync canvas after
       clearTimeout(this._resizeDelay);
       this._resizeDelay = setTimeout(() => {
@@ -84,7 +80,6 @@ Object.assign(window.AppMethods, {
         typeof DeviceOrientationEvent.requestPermission !== 'function') {
       window.addEventListener('deviceorientation', this._onOrient);
     }
-    if (_isTouch && window.innerWidth > window.innerHeight) this.setState({ landscapeWarning: true });
     this.syncFromSupabase();
     this.subscribeToRealtime();
   },
@@ -244,8 +239,7 @@ Object.assign(window.AppMethods, {
       milestone: this.state.milestone,
       hasMilestone: !!this.state.milestone,
       muteLabel: this.state.muted ? 'Unmute music' : 'Mute music',
-      copyLabel:        this.state.copied ? 'copied ✓' : 'copy',
-      landscapeWarning: this.state.landscapeWarning,
+      copyLabel: this.state.copied ? 'copied ✓' : 'copy',
       // Handlers
       clickCenter:    this.clickCenter,
       openPlaylist:   this.openPlaylist,

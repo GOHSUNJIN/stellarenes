@@ -59,4 +59,8 @@ button{touch-action:manipulation}
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.06s !important}
 }
 
+/* ── Landscape lock (instant via CSS, no JS event delay) ─────────────────── */
+.landscape-lock{display:none}
+@media(orientation:landscape)and(pointer:coarse){.landscape-lock{display:flex}}
+
 /* Animations → animations.css */
