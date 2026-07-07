@@ -52,9 +52,9 @@
 <!-- ── Background ──────────────────────────────────────────────────────── -->
 <div style="position:fixed;inset:0;background:radial-gradient(ellipse 120% 90% at 28% 18%,#1c1638 0%,#0c0a1c 46%,#06060d 100%);overflow:hidden">
 
-  <div style="position:absolute;width:60vw;height:60vw;left:-12vw;top:-18vw;border-radius:50%;background:radial-gradient(circle,rgba(124,92,220,.22),transparent 65%);filter:blur(40px);animation:floatNeb 26s ease-in-out infinite;pointer-events:none"></div>
-  <div style="position:absolute;width:55vw;height:55vw;right:-15vw;bottom:-20vw;border-radius:50%;background:radial-gradient(circle,rgba(60,120,220,.18),transparent 65%);filter:blur(46px);animation:floatNeb 32s ease-in-out infinite reverse;pointer-events:none"></div>
-  <div style="position:absolute;width:36vw;height:36vw;right:18vw;top:8vw;border-radius:50%;background:radial-gradient(circle,rgba(220,120,190,.12),transparent 65%);filter:blur(50px);animation:floatNeb 38s ease-in-out infinite;pointer-events:none"></div>
+  <div data-neb="0" style="position:absolute;width:60vw;height:60vw;left:-12vw;top:-18vw;border-radius:50%;background:radial-gradient(circle,rgba(124,92,220,.22),transparent 65%);filter:blur(40px);animation:floatNeb 26s ease-in-out infinite;pointer-events:none"></div>
+  <div data-neb="1" style="position:absolute;width:55vw;height:55vw;right:-15vw;bottom:-20vw;border-radius:50%;background:radial-gradient(circle,rgba(60,120,220,.18),transparent 65%);filter:blur(46px);animation:floatNeb 32s ease-in-out infinite reverse;pointer-events:none"></div>
+  <div data-neb="2" style="position:absolute;width:36vw;height:36vw;right:18vw;top:8vw;border-radius:50%;background:radial-gradient(circle,rgba(220,120,190,.12),transparent 65%);filter:blur(50px);animation:floatNeb 38s ease-in-out infinite;pointer-events:none"></div>
 
   <canvas ref="{{ setCanvas }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
 
@@ -385,6 +385,8 @@ class Component extends DCLogic {
     const c=this.canvasEl; if(!c){ this._raf=requestAnimationFrame(this.loop); return; }
     const ctx=c.getContext('2d'), w=c.width, h=c.height; ctx.clearRect(0,0,w,h);
     const P=this._par||(this._par={x:0,y:0,tx:0,ty:0}); P.x+=(P.tx-P.x)*.05; P.y+=(P.ty-P.y)*.05;
+    if(!this._nebEls||!this._nebEls[0]?.isConnected) this._nebEls=[...document.querySelectorAll('[data-neb]')];
+    this._nebEls.forEach((el,i)=>{ el.style.translate=(P.x*(0.18+i*0.07)).toFixed(1)+'px '+(P.y*(0.18+i*0.07)).toFixed(1)+'px'; });
     if(this.stars){
       ctx.save(); ctx.translate(P.x*this.dpr, P.y*this.dpr);
       for(const s of this.stars){
@@ -476,6 +478,7 @@ class Component extends DCLogic {
     if(!note){
       this._submitting=false;
       if(this.inputEl){ this.inputEl.classList.remove('inp-shake'); void this.inputEl.offsetWidth; this.inputEl.classList.add('inp-shake'); }
+      this.playError();
       this.setState({hintMsg:'✦ that word doesn\'t open anything'});
       clearTimeout(this._sh); this._sh=setTimeout(()=>this.setState({hintMsg:''}),2000);
       return;
@@ -514,7 +517,7 @@ class Component extends DCLogic {
     } else {
       const un=emo.notes.filter(n=>unlocked[n.code]); const idx=un.findIndex(n=>n.code===note.code);
       setTimeout(()=>this.setState({active:emo.id, noteIndex:idx<0?0:idx}), 780);
-      const MILE={5:'Five lights. A corner of your sky is glowing.',10:'Ten stars, halfway, and the sky\'s already warmer.',15:'Fifteen. Almost the whole sky is yours.'};
+      const MILE={1:'your first star, awake ✦',5:'Five lights. A corner of your sky is glowing.',10:'Ten stars, halfway, and the sky\'s already warmer.',15:'Fifteen. Almost the whole sky is yours.'};
       if(MILE[newCount]&&newCount>prevCount) this.showMilestone(MILE[newCount]);
     }
   };
@@ -534,14 +537,17 @@ class Component extends DCLogic {
   onKey   = (e) => { if(e.key==='Enter') this.submit(); };
 
   clickCenter = () => {
-    if(this.unlockedNotesFor(this.BDAY).length>0){ this.setState({active:'birthday', noteIndex:0}); }
+    if(this.unlockedNotesFor(this.BDAY).length>0){ this._lastOrb='birthday'; this.setState({active:'birthday', noteIndex:0}); }
     else { if(this.inputEl) this.inputEl.blur(); this.setState({hintMsg:'this is your birthday star, it opens with the word I gave you for today'}); clearTimeout(this._hk); this._hk=setTimeout(()=>this.setState({hintMsg:''}),3200); }
   };
 
   openBday     = () => this.setState({active:'birthday', noteIndex:0});
   openPlaylist = () => this.setState({active:'playlist', noteIndex:0});
   openEgg      = () => this.setState({active:'egg', noteIndex:0});
-  closeMessage = () => this.setState({active:null, shareOpen:false});
+  closeMessage = () => this.setState({active:null,shareOpen:false}, () => {
+    const el=this._lastOrb&&document.querySelector('[data-orb="'+this._lastOrb+'"]');
+    if(el) el.focus();
+  });
 
   onCardTouchStart = (e) => { if(e.touches.length>1){ this._swipeX=null; this._swipeY=null; return; } this._swipeX=e.touches[0].clientX; this._swipeY=e.touches[0].clientY; };
   onCardTouchEnd   = (e) => {

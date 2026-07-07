@@ -30,6 +30,7 @@ Object.assign(window.AppMethods, {
 
   playUnlock()   { this.playTones([659.25, 987.77, 1318.5],           { stagger: 0.06, peak: 0.12 }); },
   playBirthday() { this.playTones([523.25, 659.25, 783.99, 1046.5, 1318.5], { stagger: 0.11, warm: true, peak: 0.16 }); },
+  playError()    { this.playTones([220, 185],                          { stagger: 0.04, peak: 0.07 }); },
 
   startAmbient() {
     if (this.state.muted || this._amb) return;

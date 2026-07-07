@@ -85,7 +85,7 @@ Object.assign(window.AppMethods, {
     this._onKeyGlobal = (e) => {
       if (e.key === 'Escape') {
         if (this.state.shareOpen) { this.setState({ shareOpen: false }); return; }
-        if (this.state.active)   { this.setState({ active: null, shareOpen: false }); return; }
+        if (this.state.active)   { this.setState({ active: null, shareOpen: false }, () => { const el=this._lastOrb&&document.querySelector('[data-orb="'+this._lastOrb+'"]'); if(el) el.focus(); }); return; }
         if (this.state.listOpen)   this.setState({ listOpen: false });
         return;
       }
@@ -137,6 +137,7 @@ Object.assign(window.AppMethods, {
     if (this._longPressed) { this._longPressed = false; return; }
     if (this.inputEl) this.inputEl.blur();
     if (orb.unlocked) {
+      this._lastOrb = orb.id;
       this.setState({ active: orb.id, noteIndex: 0 });
     } else {
       this.pulseOrb(orb.id);
@@ -162,6 +163,7 @@ Object.assign(window.AppMethods, {
       if (!code) return;
       this.setState({ hintMsg: '✦ the word for this one is "' + code + '"' });
       clearTimeout(this._hk); this._hk = setTimeout(() => this.setState({ hintMsg: '' }), 4000);
+      try { navigator.vibrate && navigator.vibrate([10, 30, 10]); } catch(_) {}
     }, 650);
   },
 
@@ -241,7 +243,7 @@ Object.assign(window.AppMethods, {
     const barStyle      = { display: 'flex', gap: '10px', alignItems: 'center' };
     const cardStyle     = { position: 'relative', background: 'linear-gradient(180deg,rgba(24,19,46,.97),rgba(12,10,26,.98))', border: '1px solid rgba(180,160,255,.16)', boxShadow: '0 30px 90px rgba(0,0,0,.6), 0 0 80px rgba(120,90,220,.18)', '--c': cardColor, animation: 'cardIn .6s cubic-bezier(.2,.85,.25,1) both' };
     const shareCardStyle = { position: 'relative', overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)', '--share-c': shareColor };
-    const progressBarStyle = { height: '100%', borderRadius: '1px', background: 'linear-gradient(90deg,#b69bff,#7c5cdc)', transition: 'width .8s cubic-bezier(.2,.8,.2,1)', width: progressPct + '%' };
+    const progressBarStyle = { height: '100%', borderRadius: '1px', background: count >= total && total > 0 ? 'linear-gradient(90deg,#ffd27a,#ffb347)' : 'linear-gradient(90deg,#b69bff,#7c5cdc)', transition: 'width .8s cubic-bezier(.2,.8,.2,1), background 1.2s ease', width: progressPct + '%' };
 
     // Archive list
     const _found = [];
