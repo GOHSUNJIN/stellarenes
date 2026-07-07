@@ -82,6 +82,13 @@ Object.assign(window.AppMethods, {
     }
     this.syncFromSupabase();
     this.subscribeToRealtime();
+    this._onKeyGlobal = (e) => {
+      if (e.key !== 'Escape') return;
+      if (this.state.shareOpen) { this.setState({ shareOpen: false }); return; }
+      if (this.state.active)   { this.setState({ active: null, shareOpen: false }); return; }
+      if (this.state.listOpen)   this.setState({ listOpen: false });
+    };
+    window.addEventListener('keydown', this._onKeyGlobal);
   },
 
   componentWillUnmount() {
@@ -90,7 +97,8 @@ Object.assign(window.AppMethods, {
     if (this._onOrient) window.removeEventListener('deviceorientation', this._onOrient);
     if (this._onVisible) document.removeEventListener('visibilitychange', this._onVisible);
     this.stopAmbient();
-    clearTimeout(this._idle); clearTimeout(this._mt); clearTimeout(this._ch); clearTimeout(this._hk); clearTimeout(this._sh);
+    clearTimeout(this._idle); clearTimeout(this._mt); clearTimeout(this._ch); clearTimeout(this._hk); clearTimeout(this._sh); clearTimeout(this._autoSubmit);
+    if (this._onKeyGlobal) window.removeEventListener('keydown', this._onKeyGlobal);
     cancelAnimationFrame(this._raf);
     const sb = this.getSupabase(); if (sb) sb.removeAllChannels();
   },
@@ -117,9 +125,17 @@ Object.assign(window.AppMethods, {
     if (orb.unlocked) {
       this.setState({ active: orb.id, noteIndex: 0 });
     } else {
+      this.pulseOrb(orb.id);
       this.setState({ hintMsg: '✦ ' + orb.title + ', type its word to light it' });
       clearTimeout(this._hk); this._hk = setTimeout(() => this.setState({ hintMsg: '' }), 3400);
     }
+  },
+
+  pulseOrb(id) {
+    const el = document.querySelector('[data-orb="' + id + '"]'); if (!el) return;
+    el.classList.remove('orb-locked-pulse'); void el.offsetWidth;
+    el.classList.add('orb-locked-pulse');
+    setTimeout(() => el.classList.remove('orb-locked-pulse'), 600);
   },
 
   stop(e) { e.stopPropagation(); },
@@ -231,8 +247,9 @@ Object.assign(window.AppMethods, {
       // Styles
       inputStyle, barStyle, cardStyle, shareCardStyle,
       // State passthrough
-      codeInput: this.state.codeInput,
-      hintMsg:   this.state.hintMsg,
+      codeInput:     this.state.codeInput,
+      hasClearInput: !!this.state.codeInput,
+      hintMsg:       this.state.hintMsg,
       muted:     this.state.muted,
       soundOn:   !this.state.muted,
       showIntro: this.state.showIntro,
@@ -252,6 +269,7 @@ Object.assign(window.AppMethods, {
       toggleMute:     this.toggleMute,
       dismissIntro:   this.dismissIntro,
       submit:         this.submit,
+      clearInput:     this.clearInput,
       onInput:        this.onInput,
       onKey:          this.onKey,
       onCardTouchStart: this.onCardTouchStart,

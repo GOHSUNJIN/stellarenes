@@ -146,7 +146,12 @@
     <footer class="gift-footer" style="padding:4px 24px 30px;display:flex;flex-direction:column;align-items:center;gap:10px;animation:fadeUp 1.3s ease both">
       <div style="height:40px;display:flex;align-items:center;justify-content:center;max-width:92vw;text-align:center;font-family:'Instrument Serif',serif;font-style:italic;font-size:16px;line-height:1.3;color:rgba(255,180,180,.85);transition:opacity .3s">{{ hintMsg }}</div>
       <div style="{{ barStyle }}">
-        <input value="{{ codeInput }}" onInput="{{ onInput }}" onKeyDown="{{ onKey }}" ref="{{ setInput }}" placeholder="type a word…" style="{{ inputStyle }}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
+        <div style="position:relative;display:flex;align-items:center">
+          <input value="{{ codeInput }}" onInput="{{ onInput }}" onKeyDown="{{ onKey }}" ref="{{ setInput }}" placeholder="type a word…" style="{{ inputStyle }}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
+          <sc-if value="{{ hasClearInput }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ clearInput }}" aria-label="Clear input" style="position:absolute;right:14px;width:24px;height:24px;border:0;background:transparent;color:rgba(196,169,255,.45);cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;transition:color .2s" style-hover="color:rgba(196,169,255,.88)">&times;</button>
+          </sc-if>
+        </div>
         <button onClick="{{ submit }}" style="flex-shrink:0;white-space:nowrap;border:0;cursor:pointer;padding:0 22px;height:52px;border-radius:40px;background:linear-gradient(135deg,#b69bff,#7c5cdc);color:#0c0a1c;font-family:'Outfit',sans-serif;font-weight:500;font-size:13px;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 0 26px rgba(150,110,255,.45);transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-2px);box-shadow:0 0 38px rgba(150,110,255,.7)" style-active="transform:scale(.96)">Light it up</button>
       </div>
       <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;color:rgba(196,169,255,.4)">these stars wake to the words you were given</div>
@@ -462,7 +467,13 @@ class Component extends DCLogic {
     const v=(this.state.codeInput||'').trim().toLowerCase(); if(!v){ this._submitting=false; return; }
     let note=null, emo=null;
     for(const e of [...this.DATA,this.BDAY,this.EGG]){ const n=(e.notes||[]).find(x=>x.code&&x.code[0]!=='_'&&x.code.toLowerCase()===v); if(n){ note=n; emo=e; break; } }
-    if(!note){ this._submitting=false; return; }
+    if(!note){
+      this._submitting=false;
+      if(this.inputEl){ this.inputEl.classList.remove('inp-shake'); void this.inputEl.offsetWidth; this.inputEl.classList.add('inp-shake'); }
+      this.setState({hintMsg:'✦ that word doesn\'t open anything'});
+      clearTimeout(this._sh); this._sh=setTimeout(()=>this.setState({hintMsg:''}),2000);
+      return;
+    }
     if(this.state.unlocked[note.code]){
       const un=this.unlockedNotesFor(emo); const idx=un.findIndex(n=>n.code===note.code);
       this.setState({codeInput:'', hintMsg:'replaying this one, here it is again'});
@@ -502,7 +513,18 @@ class Component extends DCLogic {
     }
   };
 
-  onInput = (e) => { this.setState({codeInput:e.target.value, hintMsg:''}); this.armIdle(); };
+  onInput = (e) => {
+    const raw=e.target.value;
+    this.setState({codeInput:raw, hintMsg:''}); this.armIdle();
+    clearTimeout(this._autoSubmit);
+    const v=raw.trim().toLowerCase(); if(!v) return;
+    for(const ent of [...this.DATA,this.BDAY,this.EGG]){
+      if((ent.notes||[]).find(x=>x.code&&x.code[0]!=='_'&&x.code.toLowerCase()===v)){
+        this._autoSubmit=setTimeout(()=>{ if((this.state.codeInput||'').trim().toLowerCase()===v) this.submit(); },140);
+        break;
+      }
+    }
+  };
   onKey   = (e) => { if(e.key==='Enter') this.submit(); };
 
   clickCenter = () => {
@@ -515,10 +537,13 @@ class Component extends DCLogic {
   openEgg      = () => this.setState({active:'egg', noteIndex:0});
   closeMessage = () => this.setState({active:null, shareOpen:false});
 
-  onCardTouchStart = (e) => { if(e.touches.length>1){ this._swipeX=null; return; } this._swipeX=e.touches[0].clientX; };
+  onCardTouchStart = (e) => { if(e.touches.length>1){ this._swipeX=null; this._swipeY=null; return; } this._swipeX=e.touches[0].clientX; this._swipeY=e.touches[0].clientY; };
   onCardTouchEnd   = (e) => {
     if(this._swipeX==null) return;
-    const dx=e.changedTouches[0].clientX-this._swipeX; this._swipeX=null;
+    const dx=e.changedTouches[0].clientX-this._swipeX;
+    const dy=e.changedTouches[0].clientY-this._swipeY;
+    this._swipeX=null; this._swipeY=null;
+    if(dy>60&&Math.abs(dy)>Math.abs(dx)){ this.setState({active:null,shareOpen:false}); return; }
     if(Math.abs(dx)<40) return;
     if(dx<0) this.nextNote(e); else this.prevNote(e);
   };
@@ -526,6 +551,7 @@ class Component extends DCLogic {
   nextNote    = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n) this.setState(s=>({noteIndex:(s.noteIndex+1)%n})); };
   prevNote    = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n) this.setState(s=>({noteIndex:(s.noteIndex-1+n)%n})); };
   shuffleNote = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n<2) return; let r=this.state.noteIndex; while(r===this.state.noteIndex) r=Math.floor(Math.random()*n); this.setState({noteIndex:r}); };
+  clearInput  = () => { clearTimeout(this._autoSubmit); this.setState({codeInput:'',hintMsg:''}); if(this.inputEl) this.inputEl.focus(); };
 }
 
 // Mix in all regular methods from app.js
