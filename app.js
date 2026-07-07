@@ -83,10 +83,23 @@ Object.assign(window.AppMethods, {
     this.syncFromSupabase();
     this.subscribeToRealtime();
     this._onKeyGlobal = (e) => {
-      if (e.key !== 'Escape') return;
-      if (this.state.shareOpen) { this.setState({ shareOpen: false }); return; }
-      if (this.state.active)   { this.setState({ active: null, shareOpen: false }); return; }
-      if (this.state.listOpen)   this.setState({ listOpen: false });
+      if (e.key === 'Escape') {
+        if (this.state.shareOpen) { this.setState({ shareOpen: false }); return; }
+        if (this.state.active)   { this.setState({ active: null, shareOpen: false }); return; }
+        if (this.state.listOpen)   this.setState({ listOpen: false });
+        return;
+      }
+      if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key) &&
+          !this.state.active && !this.state.listOpen && !this.state.showIntro &&
+          document.activeElement !== this.inputEl) {
+        const orbs = [...document.querySelectorAll('[data-orb]')]
+          .filter(el => !['birthday','playlist','egg'].includes(el.getAttribute('data-orb')));
+        if (!orbs.length) return;
+        const curr = orbs.indexOf(document.activeElement);
+        const fwd  = e.key === 'ArrowRight' || e.key === 'ArrowDown';
+        const next = curr < 0 ? 0 : fwd ? (curr + 1) % orbs.length : (curr - 1 + orbs.length) % orbs.length;
+        orbs[next]?.focus(); e.preventDefault();
+      }
     };
     window.addEventListener('keydown', this._onKeyGlobal);
   },
@@ -97,7 +110,7 @@ Object.assign(window.AppMethods, {
     if (this._onOrient) window.removeEventListener('deviceorientation', this._onOrient);
     if (this._onVisible) document.removeEventListener('visibilitychange', this._onVisible);
     this.stopAmbient();
-    clearTimeout(this._idle); clearTimeout(this._mt); clearTimeout(this._ch); clearTimeout(this._hk); clearTimeout(this._sh); clearTimeout(this._autoSubmit);
+    clearTimeout(this._idle); clearTimeout(this._mt); clearTimeout(this._ch); clearTimeout(this._hk); clearTimeout(this._sh); clearTimeout(this._autoSubmit); clearTimeout(this._lpTimer);
     if (this._onKeyGlobal) window.removeEventListener('keydown', this._onKeyGlobal);
     cancelAnimationFrame(this._raf);
     const sb = this.getSupabase(); if (sb) sb.removeAllChannels();
@@ -121,6 +134,7 @@ Object.assign(window.AppMethods, {
 
   // ── Interaction ──────────────────────────────────────────────────────────
   clickOrb(orb) {
+    if (this._longPressed) { this._longPressed = false; return; }
     if (this.inputEl) this.inputEl.blur();
     if (orb.unlocked) {
       this.setState({ active: orb.id, noteIndex: 0 });
@@ -137,6 +151,21 @@ Object.assign(window.AppMethods, {
     el.classList.add('orb-locked-pulse');
     setTimeout(() => el.classList.remove('orb-locked-pulse'), 600);
   },
+
+  startLongPress(id, unlocked) {
+    clearTimeout(this._lpTimer); this._longPressed = false;
+    if (unlocked) return;
+    this._lpTimer = setTimeout(() => {
+      this._longPressed = true;
+      const entry = [...this.DATA, this.BDAY, this.EGG].find(x => x.id === id);
+      const code  = (entry && entry.notes || []).find(n => n.code && n.code[0] !== '_')?.code;
+      if (!code) return;
+      this.setState({ hintMsg: '✦ the word for this one is "' + code + '"' });
+      clearTimeout(this._hk); this._hk = setTimeout(() => this.setState({ hintMsg: '' }), 4000);
+    }, 650);
+  },
+
+  cancelLongPress() { clearTimeout(this._lpTimer); },
 
   stop(e) { e.stopPropagation(); },
 
@@ -162,7 +191,9 @@ Object.assign(window.AppMethods, {
         aria: unlocked ? e.title : 'a locked star',
         wrap:  { position: 'absolute', left: P[i].x + '%', top: P[i].y + '%', width: '52px', height: '52px', background: 'transparent', border: 0, padding: 0, cursor: 'pointer', '--c': e.color, '--lblo': '0', zIndex: 1, transition: 'filter .35s ease, transform .2s ease', animation: 'orbIn .9s cubic-bezier(.2,.8,.2,1) both', animationDelay: (i * .05) + 's' },
         hover: unlocked ? { '--lblo': '1', zIndex: 6, filter: 'brightness(1.4)', transform: 'translate(-50%,-50%) scale(1.08)' } : { '--lblo': '1', zIndex: 6, filter: 'brightness(1.35)' },
-        onClick: () => this.clickOrb({ id: e.id, unlocked, title: e.title })
+        onClick:      () => this.clickOrb({ id: e.id, unlocked, title: e.title }),
+        onPressStart: () => this.startLongPress(e.id, unlocked),
+        onPressEnd:   () => this.cancelLongPress()
       };
     });
 
@@ -202,7 +233,11 @@ Object.assign(window.AppMethods, {
     const cardColor     = active ? active.color : '#c4a9ff';
     const shareColor    = active ? active.color : '#c4a9ff';
     const progressPct   = total > 0 ? Math.round(count / total * 100) : 0;
-    const inputStyle    = { width: 'min(56vw,300px)', height: '52px', padding: '0 22px', borderRadius: '40px', background: 'rgba(20,16,40,.6)', color: '#f0ecff', fontSize: '15px', letterSpacing: '.08em', textAlign: 'center', outline: 'none', border: '1px solid rgba(180,160,255,.25)', boxShadow: '0 0 22px rgba(120,90,220,.12)', transition: 'border-color .25s, box-shadow .25s' };
+    const _cv = (this.state.codeInput || '').trim().toLowerCase();
+    const _pm = _cv.length > 0 && [...this.DATA, this.BDAY, this.EGG].some(ent =>
+      (ent.notes || []).some(n => n.code && n.code[0] !== '_' && n.code !== _cv && n.code.startsWith(_cv))
+    );
+    const inputStyle    = { width: 'min(56vw,300px)', height: '52px', padding: '0 22px', borderRadius: '40px', background: 'rgba(20,16,40,.6)', color: '#f0ecff', fontSize: '15px', letterSpacing: '.08em', textAlign: 'center', outline: 'none', border: '1px solid ' + (_pm ? 'rgba(180,140,255,.55)' : 'rgba(180,160,255,.25)'), boxShadow: _pm ? '0 0 28px rgba(150,100,255,.32),0 0 0 1px rgba(180,140,255,.2)' : '0 0 22px rgba(120,90,220,.12)', transition: 'border-color .25s, box-shadow .25s' };
     const barStyle      = { display: 'flex', gap: '10px', alignItems: 'center' };
     const cardStyle     = { position: 'relative', background: 'linear-gradient(180deg,rgba(24,19,46,.97),rgba(12,10,26,.98))', border: '1px solid rgba(180,160,255,.16)', boxShadow: '0 30px 90px rgba(0,0,0,.6), 0 0 80px rgba(120,90,220,.18)', '--c': cardColor, animation: 'cardIn .6s cubic-bezier(.2,.85,.25,1) both' };
     const shareCardStyle = { position: 'relative', overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)', '--share-c': shareColor };

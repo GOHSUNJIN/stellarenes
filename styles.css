@@ -9,6 +9,7 @@ body{background:#06060d;overflow:hidden;font-family:'Outfit',system-ui,sans-seri
 input{font-family:'Space Mono',monospace}
 input::placeholder{color:rgba(210,205,230,.32);letter-spacing:.06em}
 button{touch-action:manipulation}
+[data-orb]:focus-visible{outline:2px solid rgba(196,169,255,.65);outline-offset:8px;border-radius:50%}
 
 /* ── Layout helpers ───────────────────────────────────────────────────── */
 .intro-screen{justify-content:center;padding-top:32px}

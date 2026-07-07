@@ -123,7 +123,7 @@
 
         <!-- Star orbs -->
         <sc-for list="{{ orbs }}" as="orb" hint-placeholder-count="20">
-          <button data-orb="{{ orb.id }}" onClick="{{ orb.onClick }}" aria-label="{{ orb.aria }}" style="{{ orb.wrap }}" style-hover="{{ orb.hover }}">
+          <button data-orb="{{ orb.id }}" onClick="{{ orb.onClick }}" onMouseDown="{{ orb.onPressStart }}" onMouseUp="{{ orb.onPressEnd }}" onMouseLeave="{{ orb.onPressEnd }}" onTouchStart="{{ orb.onPressStart }}" onTouchEnd="{{ orb.onPressEnd }}" aria-label="{{ orb.aria }}" style="{{ orb.wrap }}" style-hover="{{ orb.hover }}">
             <sc-if value="{{ orb.locked }}" hint-placeholder-val="{{ true }}">
               <span class="o-twk"  style="position:absolute;left:50%;top:50%;border-radius:50%;background:rgba(230,225,250,.7);box-shadow:0 0 10px rgba(200,190,255,.6);animation:twinkle 4s ease-in-out infinite"></span>
               <span class="o-lring" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(200,190,255,.12)"></span>
@@ -356,20 +356,26 @@ class Component extends DCLogic {
   setIntro     = (el) => { this.introEl=el; };
 
   // ── Constellation line drawing ───────────────────────────────────────
-  drawLines = (ctx) => {
+  drawLines = (ctx, t) => {
     if(!this.containerEl||!this._P||!this.DATA.length) return;
     const r=this.containerEl.getBoundingClientRect(), d=this.dpr, total=this.DATA.length;
     const cx=x=>(r.left+r.width *x/100)*d;
     const cy=y=>(r.top +r.height*y/100)*d;
-    ctx.save(); ctx.lineWidth=0.8*d;
+    const pulse=this.reduced?0.55:0.55+0.2*Math.sin(t/1400);
+    ctx.save();
     for(let i=0;i<total;i++){
       const ni=(i+1)%total;
       const both=this.unlockedNotesFor(this.DATA[i]).length>0&&this.unlockedNotesFor(this.DATA[ni]).length>0;
-      ctx.strokeStyle=both?'rgba(255,150,200,.5)':'rgba(255,150,200,.13)';
-      ctx.globalAlpha=1; ctx.beginPath();
-      ctx.moveTo(cx(this._P[i].x),cy(this._P[i].y));
-      ctx.lineTo(cx(this._P[ni].x),cy(this._P[ni].y));
-      ctx.stroke();
+      const x1=cx(this._P[i].x),y1=cy(this._P[i].y),x2=cx(this._P[ni].x),y2=cy(this._P[ni].y);
+      if(both){
+        ctx.globalAlpha=pulse*0.22; ctx.lineWidth=4*d; ctx.strokeStyle='rgba(255,150,210,1)';
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+        ctx.globalAlpha=pulse;      ctx.lineWidth=1.2*d; ctx.strokeStyle='rgba(255,165,215,1)';
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      } else {
+        ctx.globalAlpha=1; ctx.lineWidth=0.7*d; ctx.strokeStyle='rgba(255,150,200,.09)';
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      }
     }
     ctx.restore();
   };
@@ -389,7 +395,7 @@ class Component extends DCLogic {
       }
       ctx.restore();
     }
-    this.drawLines(ctx);
+    this.drawLines(ctx, t);
     this._shoot=(this._shoot||0)-1;
     if(!this.reduced&&this._shoot<=0&&Math.random()<.004){
       this.shoot={ x:Math.random()*w*.7, y:Math.random()*h*.4, vx:(7+Math.random()*5)*this.dpr, vy:(3+Math.random()*3)*this.dpr, life:1 };

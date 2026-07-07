@@ -16,6 +16,7 @@ Object.assign(window.AppMethods, {
   },
 
   heartShower() {
+    if(this.reduced) return;
     const c = this.canvasEl; if (!c || !this.particles) return;
     const colors = ['#ff79b0', '#ff9ecb', '#ff5e9a', '#ffd1e6'];
     let n = 0;
@@ -60,6 +61,7 @@ Object.assign(window.AppMethods, {
   },
 
   burstAt(id) {
+    if(this.reduced) return;
     const el = document.querySelector('[data-orb="' + id + '"]'); const c = this.canvasEl;
     if (!el || !c || !this.particles) return;
     const r = el.getBoundingClientRect(), cr = c.getBoundingClientRect();
@@ -72,6 +74,7 @@ Object.assign(window.AppMethods, {
   },
 
   celebrate() {
+    if(this.reduced) return;
     const c = this.canvasEl; if (!c || !this.particles) return;
     const colors = this.DATA.map(e => e.color);
     let n = 0;
