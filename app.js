@@ -21,9 +21,12 @@ Object.assign(window.AppMethods, {
 
   // ── UI helpers ───────────────────────────────────────────────────────────
   showMilestone(txt) {
-    clearTimeout(this._mt);
-    this.setState({ milestone: txt });
-    this._mt = setTimeout(() => this.setState({ milestone: '' }), 5000);
+    clearTimeout(this._mt); clearTimeout(this._mtOut);
+    this.setState({ milestone: txt, milestoneExiting: false });
+    this._mt = setTimeout(() => {
+      this.setState({ milestoneExiting: true });
+      this._mtOut = setTimeout(() => this.setState({ milestone: '', milestoneExiting: false }), 430);
+    }, 4600);
   },
 
   armIdle() {
@@ -36,11 +39,10 @@ Object.assign(window.AppMethods, {
 
   // ── Lifecycle ────────────────────────────────────────────────────────────
   componentDidMount() {
-    this.particles = []; this._par = { x: 0, y: 0, tx: 0, ty: 0 };
+    this.particles = []; this._par = { x: 0, y: 0, tx: 0, ty: 0 }; this._prevActive = null;
     try { document.title = 'Stellarenes ✦'; } catch(e) {}
     try { this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e) { this.reduced = false; }
 
-    const _isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     this._onResize = () => {
       this.sizeCanvas();
       const wide = window.innerWidth >= 681;
@@ -99,9 +101,26 @@ Object.assign(window.AppMethods, {
         const fwd  = e.key === 'ArrowRight' || e.key === 'ArrowDown';
         const next = curr < 0 ? 0 : fwd ? (curr + 1) % orbs.length : (curr - 1 + orbs.length) % orbs.length;
         orbs[next]?.focus(); e.preventDefault();
+        return;
+      }
+      if (e.key === 'l' || e.key === 'L') {
+        if (!this.state.active && !this.state.showIntro) { this.toggleList(); }
+        return;
+      }
+      if (e.key.length === 1 && e.key !== ' ' && !e.ctrlKey && !e.metaKey && !e.altKey &&
+          !this.state.active && !this.state.showIntro && document.activeElement !== this.inputEl) {
+        this.inputEl && this.inputEl.focus();
       }
     };
     window.addEventListener('keydown', this._onKeyGlobal);
+  },
+
+  componentDidUpdate() {
+    const a = this.state.active;
+    if (a !== this._prevActive) {
+      this._prevActive = a;
+      if (a) this.duckAmbient(); else this.unduckAmbient();
+    }
   },
 
   componentWillUnmount() {
@@ -110,7 +129,7 @@ Object.assign(window.AppMethods, {
     if (this._onOrient) window.removeEventListener('deviceorientation', this._onOrient);
     if (this._onVisible) document.removeEventListener('visibilitychange', this._onVisible);
     this.stopAmbient();
-    clearTimeout(this._idle); clearTimeout(this._mt); clearTimeout(this._ch); clearTimeout(this._hk); clearTimeout(this._sh); clearTimeout(this._autoSubmit); clearTimeout(this._lpTimer);
+    clearTimeout(this._idle); clearTimeout(this._mt); clearTimeout(this._mtOut); clearTimeout(this._ch); clearTimeout(this._hk); clearTimeout(this._sh); clearTimeout(this._autoSubmit); clearTimeout(this._lpTimer);
     if (this._onKeyGlobal) window.removeEventListener('keydown', this._onKeyGlobal);
     cancelAnimationFrame(this._raf);
     const sb = this.getSupabase(); if (sb) sb.removeAllChannels();
@@ -138,7 +157,7 @@ Object.assign(window.AppMethods, {
     if (this.inputEl) this.inputEl.blur();
     if (orb.unlocked) {
       this._lastOrb = orb.id;
-      this.setState({ active: orb.id, noteIndex: 0 });
+      this.setState(s => ({ active: orb.id, noteIndex: s.lastNote?.[orb.id] || 0 }));
     } else {
       this.pulseOrb(orb.id);
       this.setState({ hintMsg: '✦ ' + orb.title + ', type its word to light it' });
@@ -172,8 +191,37 @@ Object.assign(window.AppMethods, {
   stop(e) { e.stopPropagation(); },
 
   // ── Render ───────────────────────────────────────────────────────────────
+  _buildActive(id) {
+    if (!id) return null;
+    const e = this.entryById(id); if (!e) return null;
+    const notes = this.unlockedNotesFor(e), tot = notes.length;
+    const idx = tot ? ((this.state.noteIndex % tot) + tot) % tot : 0;
+    const anim = (idx % 2) ? 'textRiseB' : 'textRise', note = notes[idx];
+    const bodyLines = ((note && note.text) || '').split('\n');
+    const _ts = note ? this.state.unlocked[note.code] : 0;
+    const foundOn = (typeof _ts === 'number' && _ts > 0)
+      ? 'Found ' + new Date(_ts).toLocaleDateString(undefined, { month: 'long', day: 'numeric' }) : '';
+    let spotify = '';
+    if (id === 'playlist' && this.SPOTIFY) {
+      const m = this.SPOTIFY.match(/playlist\/([a-zA-Z0-9]+)/);
+      spotify = 'https://open.spotify.com/embed/playlist/' + (m ? m[1] : this.SPOTIFY) + '?utm_source=generator&theme=0';
+    }
+    const codeLabel = id === 'birthday' ? e.codeLabel
+      : id === 'playlist' ? 'a secret, saved for last'
+      : (note && note.code[0] !== '_') ? 'woke to "' + note.code + '"' : '';
+    return {
+      when: e.when, title: e.title, color: e.color, foundOn, spotify, hasSpotify: !!spotify,
+      multi: tot > 1, counter: (idx + 1) + ' / ' + tot, codeLabel,
+      prevNote: this.prevNote, nextNote: this.nextNote, shuffleNote: this.shuffleNote,
+      lines: bodyLines.map((t, i) => ({
+        text: t,
+        style: { margin: '0 0 15px', fontFamily: "'Instrument Serif',serif", fontSize: 'clamp(20px,2.8vw,26px)', lineHeight: 1.55, color: 'rgba(238,234,250,.9)', opacity: 0, animation: anim + ' .7s cubic-bezier(.2,.8,.2,1) forwards', animationDelay: (.06 + i * .14) + 's' }
+      }))
+    };
+  },
+
   renderVals() {
-    const count = this.count(), foundTotal = this.foundTotal(), total = this.DATA.length;
+    const count = this.count(), total = this.DATA.length;
     const wide = this.state.isWide;
 
     // Star positions — spiral layout on wide screens, fixed positions on mobile
@@ -200,36 +248,7 @@ Object.assign(window.AppMethods, {
     });
 
     // Active message card data
-    let active = null;
-    const id = this.state.active;
-    if (id) {
-      const e = this.entryById(id);
-      if (e) {
-        const notes = this.unlockedNotesFor(e), tot = notes.length, idx = tot ? ((this.state.noteIndex % tot) + tot) % tot : 0;
-        const anim = (idx % 2) ? 'textRiseB' : 'textRise', note = notes[idx];
-        const bodyLines = ((note && note.text) || '').split('\n');
-        const _ts = note ? this.state.unlocked[note.code] : 0;
-        const foundOn = (typeof _ts === 'number' && _ts > 0) ? ('Found ' + new Date(_ts).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })) : '';
-        let spotify = '';
-        if (id === 'playlist' && this.SPOTIFY) {
-          const m = this.SPOTIFY.match(/playlist\/([a-zA-Z0-9]+)/); const pid = m ? m[1] : this.SPOTIFY;
-          spotify = 'https://open.spotify.com/embed/playlist/' + pid + '?utm_source=generator&theme=0';
-        }
-        const codeLabel = id === 'birthday' ? e.codeLabel
-          : id === 'playlist' ? 'a secret, saved for last'
-          : (note && note.code[0] !== '_') ? 'woke to "' + note.code + '"'
-          : '';
-        active = {
-          when: e.when, title: e.title, color: e.color, foundOn, spotify, hasSpotify: !!spotify,
-          multi: tot > 1, counter: (idx + 1) + ' / ' + tot, codeLabel,
-          prevNote: this.prevNote, nextNote: this.nextNote, shuffleNote: this.shuffleNote,
-          lines: bodyLines.map((t, i) => ({
-            text: t,
-            style: { margin: '0 0 15px', fontFamily: "'Instrument Serif',serif", fontSize: 'clamp(20px,2.8vw,26px)', lineHeight: 1.55, color: 'rgba(238,234,250,.9)', opacity: 0, animation: anim + ' .7s cubic-bezier(.2,.8,.2,1) forwards', animationDelay: (.06 + i * .14) + 's' }
-          }))
-        };
-      }
-    }
+    const active = this._buildActive(this.state.active);
 
     // Styles
     const cardColor     = active ? active.color : '#c4a9ff';
@@ -267,7 +286,7 @@ Object.assign(window.AppMethods, {
 
     return {
       // Counts & progress
-      count, total, foundTotal, progressBarStyle,
+      count, total, progressBarStyle,
       // Orbs
       orbs,
       // Modals
@@ -292,15 +311,14 @@ Object.assign(window.AppMethods, {
       showIntro: this.state.showIntro,
       milestone: this.state.milestone,
       hasMilestone: !!this.state.milestone,
+      milestoneAnim: this.state.milestoneExiting ? 'toastOut .43s ease forwards' : 'toastIn .6s cubic-bezier(.2,.8,.2,1) both',
       muteLabel: this.state.muted ? 'Unmute music' : 'Mute music',
       copyLabel: this.state.copied ? 'copied ✓' : 'copy',
       // Handlers
       clickCenter:    this.clickCenter,
       openPlaylist:   this.openPlaylist,
       openEgg:        this.openEgg,
-      openBday:       this.openBday,
       closeMessage:   this.closeMessage,
-      openShare:      this.openShare,
       closeShare:     this.closeShare,
       toggleList:     this.toggleList,
       toggleMute:     this.toggleMute,
@@ -309,8 +327,10 @@ Object.assign(window.AppMethods, {
       clearInput:     this.clearInput,
       onInput:        this.onInput,
       onKey:          this.onKey,
-      onCardTouchStart: this.onCardTouchStart,
-      onCardTouchEnd:   this.onCardTouchEnd,
+      onCardTouchStart:  this.onCardTouchStart,
+      onCardTouchEnd:    this.onCardTouchEnd,
+      onShareTouchStart: this.onShareTouchStart,
+      onShareTouchEnd:   this.onShareTouchEnd,
       copyShareText:  this.copyShareText,
       stop:           this.stop,
       // Refs

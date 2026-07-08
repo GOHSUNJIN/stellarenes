@@ -16,5 +16,10 @@
 @keyframes phoneRotate{0%,20%{transform:translate(-50%,-50%) rotate(90deg)}       55%,80%{transform:translate(-50%,-50%) rotate(0deg)}  100%{transform:translate(-50%,-50%) rotate(90deg)}}
 @keyframes inpShake  {0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(3px)}}
 @keyframes orbPulse  {0%{filter:brightness(1)} 35%{filter:brightness(1.9) drop-shadow(0 0 12px rgba(200,190,255,.85))} 100%{filter:brightness(1)}}
-.inp-shake      {animation:inpShake .38s cubic-bezier(.36,.07,.19,.97) both}
+@keyframes noteOut   {from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-8px)}}
+@keyframes toastOut  {from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-14px)}}
+@keyframes countPop  {0%,100%{transform:scale(1)} 45%{transform:scale(1.32)}}
+.inp-shake       {animation:inpShake .38s cubic-bezier(.36,.07,.19,.97) both}
 .orb-locked-pulse{animation:orbPulse .55s ease both}
+.note-fade-out   {animation:noteOut .17s ease forwards}
+.count-pop       {animation:countPop .48s cubic-bezier(.2,.8,.2,1) both}

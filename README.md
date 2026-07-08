@@ -13,6 +13,21 @@ A personalised interactive birthday gift — a constellation of 20 stars, each h
 - A **playlist star** appears once all 20 are lit — links to a Spotify playlist
 - A secret **easter egg** star rewards finding the hidden word
 - Unlocks sync to Supabase so all her devices share the same progress
+- Ambient music fades in after the intro and ducks softly while a message card is open
+- On iOS, gyroscope parallax activates automatically after the intro tap
+- The app remembers which note you were reading when you close and reopen a star
+
+---
+
+## Keyboard shortcuts
+
+| Key | Action |
+|-----|--------|
+| Any letter | Focuses the word input |
+| `Enter` | Submit the typed word |
+| `Escape` | Close open card / share panel |
+| `L` | Toggle the archive panel |
+| `← → ↑ ↓` | Navigate between star orbs |
 
 ---
 

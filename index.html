@@ -82,7 +82,7 @@
       <div class="ah-eyebrow" style="font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:rgba(196,169,255,.6);font-weight:400">A constellation for</div>
       <h1 class="ah-title" style="font-family:'Parisienne',cursive;font-weight:400;font-size:clamp(58px,10vw,108px);line-height:1;margin:2px 0 0;color:#f3eeff;letter-spacing:.01em;text-shadow:0 0 38px rgba(160,120,255,.4)">Renes</h1>
       <p class="ah-sub" style="font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(17px,2.2vw,22px);color:rgba(220,214,240,.66);margin-top:6px;max-width:38ch;margin-left:auto;margin-right:auto;text-wrap:balance">One star for every feeling. Type its word to wake it, or tap any star to find it.</p>
-      <div class="ah-count" style="margin-top:12px;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:rgba(196,169,255,.55)"><span style="color:#e9ddff;font-weight:500">{{ count }}</span> of {{ total }} stars awake</div>
+      <div class="ah-count" style="margin-top:12px;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:rgba(196,169,255,.55)"><span class="count-num" style="color:#e9ddff;font-weight:500;display:inline-block">{{ count }}</span> of {{ total }} stars awake</div>
       <div style="margin-top:8px;width:min(180px,45vw);height:2px;border-radius:1px;background:rgba(196,169,255,.12);overflow:hidden;margin-left:auto;margin-right:auto">
         <div style="{{ progressBarStyle }}"></div>
       </div>
@@ -245,13 +245,13 @@
   <!-- ── Milestone toast ───────────────────────────────────────────────── -->
   <sc-if value="{{ hasMilestone }}" hint-placeholder-val="{{ false }}">
     <div style="position:fixed;top:0;left:0;right:0;z-index:25;display:flex;justify-content:center;pointer-events:none;padding-top:88px">
-      <div style="padding:13px 26px;border-radius:40px;background:rgba(22,17,42,.82);backdrop-filter:blur(10px);border:1px solid rgba(196,169,255,.3);box-shadow:0 12px 40px rgba(0,0,0,.4);font-family:'Instrument Serif',serif;font-style:italic;font-size:18px;color:#efeaff;animation:toastIn .6s cubic-bezier(.2,.8,.2,1) both">{{ milestone }}</div>
+      <div style="padding:13px 26px;border-radius:40px;background:rgba(22,17,42,.82);backdrop-filter:blur(10px);border:1px solid rgba(196,169,255,.3);box-shadow:0 12px 40px rgba(0,0,0,.4);font-family:'Instrument Serif',serif;font-style:italic;font-size:18px;color:#efeaff;animation:{{ milestoneAnim }}">{{ milestone }}</div>
     </div>
   </sc-if>
 
   <!-- ── Share / screenshot card ──────────────────────────────────────── -->
   <sc-if value="{{ shareOpen }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ closeShare }}" style="position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;background:rgba(4,3,12,.93);backdrop-filter:blur(24px);animation:backdropIn .4s ease both">
+    <div onClick="{{ closeShare }}" onTouchStart="{{ onShareTouchStart }}" onTouchEnd="{{ onShareTouchEnd }}" style="position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;background:rgba(4,3,12,.93);backdrop-filter:blur(24px);animation:backdropIn .4s ease both">
 
       <!-- Card — clean for screenshotting -->
       <div onClick="{{ stop }}" class="modal-panel" style="{{ shareCardStyle }}">
@@ -343,10 +343,12 @@ class Component extends DCLogic {
     muted:     this.loadMuted(),
     showIntro: true,          // always plays on every visit
     milestone: '',
+    milestoneExiting: false,
     isWide:    (typeof window !== 'undefined' && window.innerWidth >= 681),
     listOpen:  false,
     shareOpen: false,
-    copied: false
+    copied:    false,
+    lastNote:  {}
   };
 
   // ── Ref setters ──────────────────────────────────────────────────────
@@ -424,7 +426,7 @@ class Component extends DCLogic {
 
   // Intro dismissal — no localStorage tracking, so intro plays every visit
   dismissIntro = () => {
-    this.initAudio(); this.startAmbient();
+    this.initAudio(); this.startAmbient(); this.requestGyroscope();
     const el=this.introEl;
     const done=()=>{ if(this._introClosing){ this._introClosing=false; this.setState({showIntro:false}, ()=>{ if(this.inputEl&&!('ontouchstart' in window)) this.inputEl.focus(); this.armIdle(); }); } };
     if(this._introClosing) return;
@@ -442,14 +444,16 @@ class Component extends DCLogic {
 
   toggleList = () => this.setState(s=>({listOpen:!s.listOpen}));
 
+  _activeNote() {
+    const id=this.state.active; if(!id) return null;
+    const e=this.entryById(id), notes=this.unlockedNotesFor(e), tot=notes.length;
+    return { e, note: notes[tot?(((this.state.noteIndex%tot)+tot)%tot):0] };
+  }
+
   openShare = () => {
-    const id=this.state.active; if(!id) return;
-    const e=this.entryById(id);
-    const notes=this.unlockedNotesFor(e);
-    const idx=notes.length?(((this.state.noteIndex%notes.length)+notes.length)%notes.length):0;
-    const note=notes[idx];
-    if(navigator.share&&note){
-      navigator.share({title:e?e.title:'Stellarenes',text:note.text||''}).catch(err=>{ if(err&&err.name!=='AbortError') this.setState({shareOpen:true}); });
+    const an=this._activeNote(); if(!an) return;
+    if(navigator.share&&an.note){
+      navigator.share({title:an.e?an.e.title:'Stellarenes',text:an.note.text||''}).catch(err=>{ if(err&&err.name!=='AbortError') this.setState({shareOpen:true}); });
     } else {
       this.setState({shareOpen:true});
     }
@@ -457,12 +461,8 @@ class Component extends DCLogic {
   closeShare = () => this.setState({shareOpen:false});
 
   copyShareText = () => {
-    const id=this.state.active; if(!id) return;
-    const e=this.entryById(id);
-    const notes=this.unlockedNotesFor(e);
-    const idx=notes.length?(((this.state.noteIndex%notes.length)+notes.length)%notes.length):0;
-    const note=notes[idx]; if(!note) return;
-    const txt=(e?e.title+'\n\n':'')+(note.text||'');
+    const an=this._activeNote(); if(!an||!an.note) return;
+    const txt=(an.e?an.e.title+'\n\n':'')+(an.note.text||'');
     navigator.clipboard.writeText(txt).then(()=>{
       this.setState({shareOpen:false, copied:true});
       clearTimeout(this._ch); this._ch=setTimeout(()=>this.setState({copied:false}),1800);
@@ -504,6 +504,7 @@ class Component extends DCLogic {
     this.saveUnlockToSupabase(note.code, emo.id, emo.title);
     const newCount=this.DATA.filter(e=>(e.notes||[]).some(n=>unlocked[n.code])).length;
     this.setState({unlocked, codeInput:'', hintMsg:''}); if(this.inputEl) this.inputEl.blur(); clearTimeout(this._idle);
+    setTimeout(()=>{ const cn=document.querySelector('.count-num'); if(cn){ cn.classList.remove('count-pop'); void cn.offsetWidth; cn.classList.add('count-pop'); setTimeout(()=>cn.classList.remove('count-pop'),520); } }, 180);
     if(emo.id==='birthday') this.playBirthday(); else this.playUnlock();
     try{navigator.vibrate&&navigator.vibrate([10,50,10]);}catch(_){}
     setTimeout(()=>this.burstAt(emo.id), 40);
@@ -517,7 +518,7 @@ class Component extends DCLogic {
     } else {
       const un=emo.notes.filter(n=>unlocked[n.code]); const idx=un.findIndex(n=>n.code===note.code);
       setTimeout(()=>this.setState({active:emo.id, noteIndex:idx<0?0:idx}), 780);
-      const MILE={1:'your first star, awake ✦',5:'Five lights. A corner of your sky is glowing.',10:'Ten stars, halfway, and the sky\'s already warmer.',15:'Fifteen. Almost the whole sky is yours.'};
+      const MILE={1:'your first star is awake.',5:'five stars lit, fifteen still sleeping.',10:'ten stars awake, halfway through.',15:'fifteen found, five still dark.'};
       if(MILE[newCount]&&newCount>prevCount) this.showMilestone(MILE[newCount]);
     }
   };
@@ -537,13 +538,12 @@ class Component extends DCLogic {
   onKey   = (e) => { if(e.key==='Enter') this.submit(); };
 
   clickCenter = () => {
-    if(this.unlockedNotesFor(this.BDAY).length>0){ this._lastOrb='birthday'; this.setState({active:'birthday', noteIndex:0}); }
+    if(this.unlockedNotesFor(this.BDAY).length>0){ this._lastOrb='birthday'; this.setState(s=>({active:'birthday', noteIndex:s.lastNote?.birthday||0})); }
     else { if(this.inputEl) this.inputEl.blur(); this.setState({hintMsg:'this is your birthday star, it opens with the word I gave you for today'}); clearTimeout(this._hk); this._hk=setTimeout(()=>this.setState({hintMsg:''}),3200); }
   };
 
-  openBday     = () => this.setState({active:'birthday', noteIndex:0});
-  openPlaylist = () => this.setState({active:'playlist', noteIndex:0});
-  openEgg      = () => this.setState({active:'egg', noteIndex:0});
+  openPlaylist = () => this.setState(s=>({active:'playlist', noteIndex:s.lastNote?.playlist||0}));
+  openEgg      = () => this.setState(s=>({active:'egg',      noteIndex:s.lastNote?.egg     ||0}));
   closeMessage = () => this.setState({active:null,shareOpen:false}, () => {
     const el=this._lastOrb&&document.querySelector('[data-orb="'+this._lastOrb+'"]');
     if(el) el.focus();
@@ -560,9 +560,25 @@ class Component extends DCLogic {
     if(dx<0) this.nextNote(e); else this.prevNote(e);
   };
 
-  nextNote    = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n) this.setState(s=>({noteIndex:(s.noteIndex+1)%n})); };
-  prevNote    = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n) this.setState(s=>({noteIndex:(s.noteIndex-1+n)%n})); };
-  shuffleNote = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n<2) return; let r=this.state.noteIndex; while(r===this.state.noteIndex) r=Math.floor(Math.random()*n); this.setState({noteIndex:r}); };
+  _scrollTop = () => { const s=document.querySelector('.msg-scroll'); if(s) s.scrollTop=0; };
+  _noteTransition(newIdx) {
+    const id=this.state.active;
+    const update=s=>({ noteIndex:newIdx, lastNote:{...s.lastNote,...(id?{[id]:newIdx}:{})} });
+    const el=document.querySelector('.msg-scroll');
+    if(!el||this.reduced){ this.setState(update, this._scrollTop); return; }
+    el.classList.add('note-fade-out');
+    setTimeout(()=>{ el.classList.remove('note-fade-out'); this.setState(update, this._scrollTop); }, 170);
+  }
+  nextNote    = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n) this._noteTransition((this.state.noteIndex+1)%n); };
+  prevNote    = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n) this._noteTransition((this.state.noteIndex-1+n)%n); };
+  shuffleNote = (e) => { e&&e.stopPropagation(); const n=this.noteCount(); if(n<2) return; let r=this.state.noteIndex; while(r===this.state.noteIndex) r=Math.floor(Math.random()*n); this._noteTransition(r); };
+
+  onShareTouchStart = (e) => { this._shareSY=e.touches[0]?.clientY??null; };
+  onShareTouchEnd   = (e) => {
+    if(this._shareSY==null) return;
+    const dy=e.changedTouches[0].clientY-this._shareSY; this._shareSY=null;
+    if(dy>60) this.closeShare();
+  };
   clearInput  = () => { clearTimeout(this._autoSubmit); this.setState({codeInput:'',hintMsg:''}); if(this.inputEl) this.inputEl.focus(); };
 }
 
