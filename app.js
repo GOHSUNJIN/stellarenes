@@ -141,7 +141,6 @@ Object.assign(window.AppMethods, {
     if (e.id === 'playlist') return e.notes;
     return e.notes.filter(n => this.state.unlocked[n.code]);
   },
-  foundTotal() { return this.DATA.reduce((a, e) => a + this.unlockedNotesFor(e).length, 0); },
   count()      { return this.DATA.filter(e => this.unlockedNotesFor(e).length > 0).length; },
   noteCount()  { const e = this.entryById(this.state.active); return this.unlockedNotesFor(e).length; },
   entryById(id) {
