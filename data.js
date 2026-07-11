@@ -12,9 +12,9 @@ window.STARS = {
     { id:'overwhelmed', title:'When you feel overwhelmed',        when:'for the too-much days',      color:'hsl(285,55%,76%)', x:12,   y:38.3, notes:[ { code:'weightless', text:M.weightless } ] },
     { id:'lost',        title:'When you feel lost',               when:'for the in-between days',    color:'hsl(195,62%,70%)', x:23,   y:47.2, notes:[ { code:'polaris',    text:M.polaris    } ] },
     { id:'notenough',   title:"When you're not enough",         when:'for the doubting days',      color:'hsl(205,62%,72%)', x:30.3, y:70.1, notes:[ { code:'supernova',  text:M.supernova  } ] },
-    { id:'spiralling',  title:"When you're spiralling",          when:'for the racing days',        color:'hsl(165,55%,66%)', x:38.3, y:76,   notes:[ { code:'drift',      text:M.drift      } ] },
+    { id:'spiralling',  title:'When you feel misunderstood',      when:'for the unheard days',       color:'hsl(165,55%,66%)', x:38.3, y:76,   notes:[ { code:'echo',       text:M.echo       } ] },
     { id:'restless',    title:"When you can't sleep",            when:'for the 3am days',           color:'hsl(265,58%,78%)', x:40.1, y:37,   notes:[ { code:'moonlight',  text:M.moonlight  } ] },
-    { id:'held',        title:'When you need holding',    when:'for the tender days',        color:'hsl(110,50%,68%)', x:88,   y:38.3, notes:[ { code:'gravity',    text:M.gravity    } ] },
+    { id:'held',        title:'When you need space',       when:'for the breathe days',       color:'hsl(110,50%,68%)', x:88,   y:38.3, notes:[ { code:'aurora',     text:M.aurora     } ] },
     { id:'faraway',     title:'When you miss me',        when:'for the far-apart days',     color:'hsl(330,68%,75%)', x:66,   y:56.2, notes:[ { code:'orbit',      text:M.orbit      } ] },
     { id:'afraid',      title:"When you're afraid",               when:'for the trembling days',     color:'hsl(10,72%,70%)',  x:26.5, y:84,   notes:[ { code:'ignite',     text:M.ignite     } ] },
     { id:'exhausted',   title:'When you feel exhausted',          when:'for the empty days',         color:'hsl(260,30%,62%)', x:73.5, y:84,   notes:[ { code:'dusk',       text:M.dusk       } ] },
@@ -26,7 +26,7 @@ window.STARS = {
     { id:'sick',        title:'When you feel sick',               when:'for the unwell days',        color:'hsl(195,45%,72%)', x:45.1, y:23.5, notes:[ { code:'nebula',     text:M.nebula     } ] },
     { id:'angry',       title:'When you feel angry',              when:'for the burning days',       color:'hsl(14,75%,64%)',  x:50,   y:10,   notes:[ { code:'solar',      text:M.solar      } ] },
     { id:'notokay',     title:'When you pull away',    when:'for the drifting-apart days',color:'hsl(225,30%,62%)', x:59.9, y:37,   notes:[ { code:'tether',     text:M.tether     } ] },
-    { id:'playful',     title:'When you feel playful',            when:'for the silly days',         color:'hsl(36,78%,68%)',  x:77,   y:47.2, notes:[ { code:'twinkle',    text:M.twinkle    } ] },
+    { id:'playful',     title:'When you feel seen',               when:'for the known days',         color:'hsl(36,78%,68%)',  x:77,   y:47.2, notes:[ { code:'radiant',    text:M.radiant    } ] },
     { id:'lonely',      title:'When you feel lonely',             when:'for the invisible days',     color:'hsl(235,40%,68%)', x:54.9, y:23.5, notes:[ { code:'void',       text:M.void       } ] }
   ],
 

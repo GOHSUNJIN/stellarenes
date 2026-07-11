@@ -57,9 +57,9 @@ Twenty years of you...`,
 | `weightless` | When you feel overwhelmed |
 | `polaris` | When you feel lost |
 | `supernova` | When you feel not enough |
-| `drift` | When you're spiralling |
+| `echo` | When you feel misunderstood |
 | `moonlight` | When you can't sleep |
-| `gravity` | When you feel like being held |
+| `aurora` | When you need space |
 | `orbit` | When you feel far from me |
 | `ignite` | When you're afraid |
 | `dusk` | When you feel exhausted |
@@ -71,7 +71,7 @@ Twenty years of you...`,
 | `nebula` | When you feel sick |
 | `solar` | When you feel angry |
 | `tether` | When you feel distant from me |
-| `twinkle` | When you feel playful |
+| `radiant` | When you feel seen |
 | `void` | When you feel lonely |
 
 ### Special codes
