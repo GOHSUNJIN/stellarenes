@@ -426,7 +426,7 @@ class Component extends DCLogic {
 
   // Intro dismissal — no localStorage tracking, so intro plays every visit
   dismissIntro = () => {
-    this.initAudio(); this.startAmbient(); this.requestGyroscope();
+    this.initAudio(); this.startAmbient();
     const el=this.introEl;
     const done=()=>{ if(this._introClosing){ this._introClosing=false; this.setState({showIntro:false}, ()=>{ if(this.inputEl&&!('ontouchstart' in window)) this.inputEl.focus(); this.armIdle(); }); } };
     if(this._introClosing) return;
