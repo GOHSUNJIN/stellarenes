@@ -252,8 +252,7 @@ So if today feels a little emptier than usual, hold on to this for me. Somewhere
 
 
 // ── Birthday star (center) ───────────────────────────────────────────────
-//    'queen'     → give her this word on her actual birthday
-//    '_complete' → auto-unlocks once all 20 stars are lit
+//    'queen' → give her this word on her actual birthday
 
 queen: `Happy birthday, Queen.
 
@@ -288,27 +287,8 @@ Always, always, always.
 Happy birthday, Queen.
 `,
 
-_complete: `You actually found them all.
 
-Every star, every letter, every little piece of me that I hid up here hoping you'd eventually find it. I don't know if you unlocked them all straight away or if some of them stayed unopened until you needed them, but I kind of like the idea that they found you at the right time instead of all at once.
-
-I made this because I wanted there to be somewhere you could always come back to whenever life got a little too loud. Somewhere you could go when I wasn't right beside you but you needed to hear something that felt like me. Every single one of these was written with you in mind. Not just anyone. You. The girl who carries more than she lets on, who loves people so naturally that she forgets she's allowed to need the same love back sometimes, and who still somehow manages to doubt herself despite giving everyone around her so many reasons not to.
-
-I don't know which letter ended up being your favourite. Maybe it was one you opened on a really good day. Maybe it was one you needed more than either of us expected. Maybe there was one that made you laugh, one that made you cry, or one that you kept coming back to whenever things got hard. Whatever it was, I just hope they did what I wanted them to do. I hope they made you feel a little less alone.
-
-That's all these were ever meant to be. Little reminders that someone out there knows you, sees you, and loves you exactly as you are. On your best days, your worst days, and every ordinary day in between.
-
-So even though there aren't any stars left to unlock now, I hope you still come back every now and then. Not because you need to complete anything else, but because I like the thought that years from now, you'll open one of these again and it'll still feel like I'm sitting beside you.
-
-Thank you for finding every single one.
-
-I'll always be here.
-
-Always, always, always.
-`,
-
-
-// ── Secret star (she types 'forever') ───────────────────────────────────
+// ── Secret star (auto-unlocks when all 20 found, or she types 'forever') ─
 
 forever: `You found the secret one.
 

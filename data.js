@@ -32,8 +32,7 @@ window.STARS = {
 
   BDAY: { id:'birthday', title:'Happy birthday, Renes', when:'open me today', color:'#ffd27a', codeLabel:'with love, always',
     notes:[
-      { code:'queen',     text:M.queen     },
-      { code:'_complete', text:M._complete }
+      { code:'queen', text:M.queen }
     ] },
 
   EGG: { id:'egg', title:'I love you', when:'a little secret', color:'#ff79b0', codeLabel:'— always yours',
