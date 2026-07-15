@@ -370,7 +370,7 @@ class Component extends DCLogic {
     let edges;
     if(this.state.isWide){
       const n=this.DATA.length, out=[];
-      for(let i=0;i<n;i++) out.push([i,(i+1)%n]);
+      for(let i=0;i<n-1;i++) out.push([i,i+1]);
       edges=out;
     } else {
       if(!this._edges||this._edgesWide!==false){
