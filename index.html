@@ -549,13 +549,13 @@ class Component extends DCLogic {
     if(el) el.focus();
   });
 
-  onCardTouchStart = (e) => { if(e.touches.length>1){ this._swipeX=null; this._swipeY=null; return; } this._swipeX=e.touches[0].clientX; this._swipeY=e.touches[0].clientY; };
+  onCardTouchStart = (e) => { if(e.touches.length>1){ this._swipeX=null; this._swipeY=null; return; } this._swipeX=e.touches[0].clientX; this._swipeY=e.touches[0].clientY; const s=document.querySelector('.msg-scroll'); this._scrollAtStart=s?s.scrollTop:0; };
   onCardTouchEnd   = (e) => {
     if(this._swipeX==null) return;
     const dx=e.changedTouches[0].clientX-this._swipeX;
     const dy=e.changedTouches[0].clientY-this._swipeY;
     this._swipeX=null; this._swipeY=null;
-    if(dy>60&&Math.abs(dy)>Math.abs(dx)){ this.setState({active:null,shareOpen:false}); return; }
+    if(dy>80&&Math.abs(dy)>Math.abs(dx)&&this._scrollAtStart===0){ this.setState({active:null,shareOpen:false}); return; }
     if(Math.abs(dx)<40) return;
     if(dx<0) this.nextNote(e); else this.prevNote(e);
   };

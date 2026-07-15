@@ -83,7 +83,7 @@ Object.assign(window.AppMethods, {
         return;
       }
       if (e.key === 'l' || e.key === 'L') {
-        if (!this.state.active && !this.state.showIntro) { this.toggleList(); }
+        if (!this.state.active && !this.state.showIntro && document.activeElement !== this.inputEl) { this.toggleList(); }
         return;
       }
       if (e.key.length === 1 && e.key !== ' ' && !e.ctrlKey && !e.metaKey && !e.altKey &&
