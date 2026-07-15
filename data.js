@@ -30,15 +30,15 @@ window.STARS = {
     { id:'lonely',      title:'When you feel lonely',             when:'for the invisible days',     color:'hsl(235,40%,68%)', x:54.9, y:23.5, notes:[ { code:'void',       text:M.void       } ] }
   ],
 
-  BDAY: { id:'birthday', title:'Happy Birthday Renes', when:'open me today', color:'#ffd27a', codeLabel:'with love, always',
+  BDAY: { id:'birthday', title:'Happy Birthday Renes', when:'open me today', color:'#ffd27a', codeLabel:'happy birthday queen',
     notes:[
       { code:'queen', text:M.queen }
     ] },
 
-  EGG: { id:'egg', title:'Will you be my Girlfriend?', when:'a little secret', color:'#ff79b0', codeLabel:'— always yours',
+  EGG: { id:'egg', title:'Will you be my Girlfriend?', when:'a little secret', color:'#ff79b0', codeLabel:'<3',
     notes:[ { code:'forever', text:M.forever } ] },
 
-  PLAYLIST: { id:'playlist', title:'A little more', when:'a secret saved for last', color:'#5fd38a',
+  PLAYLIST: { id:'playlist', title:'A little more', when:'a playlist for you', color:'#5fd38a',
     notes:[ { code:'_playlist', text:M._playlist } ] },
 
   SPOTIFY: M.SPOTIFY
