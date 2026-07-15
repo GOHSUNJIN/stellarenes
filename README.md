@@ -10,12 +10,13 @@ A personalised interactive birthday gift — a constellation of 20 stars, each h
 - Each star is locked until its secret word is typed into the input bar
 - Unlocking a star plays a short tone, bursts particles, and reveals a personal message
 - A hidden **birthday star** at the centre opens with a special code given on the day
-- A **playlist star** appears once all 20 are lit — links to a Spotify playlist
-- A secret **easter egg** star rewards finding the hidden word
+- When the last of the 20 stars is lit, a secret **egg star** appears automatically after she closes it
+- A **playlist star** appears once all 20 are lit — links to a Spotify playlist with a personal note
+- A secret **easter egg** star also unlocks manually by typing its word at any time
 - Unlocks sync to Supabase so all her devices share the same progress
 - Ambient music fades in after the intro and ducks softly while a message card is open
-- On iOS, gyroscope parallax activates automatically after the intro tap
 - The app remembers which note you were reading when you close and reopen a star
+- Modal cards only close with the **close button** — tapping the backdrop does nothing
 
 ---
 
@@ -56,21 +57,21 @@ Twenty years of you...`,
 | `kintsugi` | When your heart aches |
 | `weightless` | When you feel overwhelmed |
 | `polaris` | When you feel lost |
-| `supernova` | When you feel not enough |
+| `supernova` | When you're not enough |
 | `echo` | When you feel misunderstood |
 | `moonlight` | When you can't sleep |
 | `aurora` | When you need space |
-| `orbit` | When you feel far from me |
+| `orbit` | When you miss me |
 | `ignite` | When you're afraid |
 | `dusk` | When you feel exhausted |
 | `eclipse` | When you feel loved |
 | `luminous` | When you feel grateful |
 | `zenith` | When you feel proud |
 | `cosmos` | When you feel small |
-| `serene` | When you feel at peace |
+| `serene` | When you're at peace |
 | `nebula` | When you feel sick |
 | `solar` | When you feel angry |
-| `tether` | When you feel distant from me |
+| `tether` | When you pull away |
 | `radiant` | When you feel seen |
 | `void` | When you feel lonely |
 
@@ -79,8 +80,7 @@ Twenty years of you...`,
 | Code | What it does |
 |------|--------------|
 | `queen` | Birthday star — give her this word on the day |
-| `forever` | Secret easter egg star |
-| `_complete` | Auto-unlocks birthday star when all 20 are lit |
+| `forever` | Secret easter egg star — type it any time |
 | `_playlist` | Auto-unlocks playlist star when all 20 are lit |
 
 ---

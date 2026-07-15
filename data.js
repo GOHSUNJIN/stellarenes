@@ -38,7 +38,7 @@ window.STARS = {
   EGG: { id:'egg', title:'I love you', when:'a little secret', color:'#ff79b0', codeLabel:'— always yours',
     notes:[ { code:'forever', text:M.forever } ] },
 
-  PLAYLIST: { id:'playlist', title:'One more thing', when:'a secret, saved for last', color:'#5fd38a',
+  PLAYLIST: { id:'playlist', title:'One more thing', when:'a secret saved for last', color:'#5fd38a',
     notes:[ { code:'_playlist', text:M._playlist } ] },
 
   SPOTIFY: M.SPOTIFY

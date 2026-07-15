@@ -66,7 +66,7 @@ Object.assign(window.AppMethods, {
     this._onKeyGlobal = (e) => {
       if (e.key === 'Escape') {
         if (this.state.shareOpen) { this.setState({ shareOpen: false }); return; }
-        if (this.state.active)   { this.setState({ active: null, shareOpen: false }, () => { const el=this._lastOrb&&document.querySelector('[data-orb="'+this._lastOrb+'"]'); if(el) el.focus(); }); return; }
+        if (this.state.active)   { this.closeMessage(); return; }
         if (this.state.listOpen)   this.setState({ listOpen: false });
         return;
       }
@@ -184,7 +184,7 @@ Object.assign(window.AppMethods, {
       spotify = 'https://open.spotify.com/embed/playlist/' + (m ? m[1] : this.SPOTIFY) + '?utm_source=generator&theme=0';
     }
     const codeLabel = id === 'birthday' ? e.codeLabel
-      : id === 'playlist' ? 'a secret, saved for last'
+      : id === 'playlist' ? 'a secret saved for last'
       : (note && note.code[0] !== '_') ? 'woke to "' + note.code + '"' : '';
     return {
       when: e.when, title: e.title, color: e.color, foundOn, spotify, hasSpotify: !!spotify,

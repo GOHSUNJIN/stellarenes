@@ -112,7 +112,7 @@
             <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;border:1px solid rgba(95,211,138,.45);animation:spinSlow 14s linear infinite"></span>
             <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:#5fd38a;box-shadow:0 0 24px #5fd38a,0 0 50px #36b36a;display:flex;align-items:center;justify-content:center;font-size:15px;color:#06140c;animation:breathe 3.4s ease-in-out infinite">&#9834;</span>
           </button>
-          <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:14px;color:#dffbe9;text-shadow:0 0 14px rgba(95,211,138,.6);animation:labelGlow 2.6s ease-in-out infinite">a secret, for you</span>
+          <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:14px;color:#dffbe9;text-shadow:0 0 14px rgba(95,211,138,.6);animation:labelGlow 2.6s ease-in-out infinite">a secret for you</span>
         </div>
       </sc-if>
     </div>
@@ -194,7 +194,7 @@
 
   <!-- ── Message card modal ────────────────────────────────────────────── -->
   <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ closeMessage }}" style="position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,6,13,.74);backdrop-filter:blur(10px);animation:backdropIn .5s ease both">
+    <div style="position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,6,13,.74);backdrop-filter:blur(10px);animation:backdropIn .5s ease both">
       <div onClick="{{ stop }}" class="modal-panel msg-card" style="{{ cardStyle }}" onTouchStart="{{ onCardTouchStart }}" onTouchEnd="{{ onCardTouchEnd }}">
         <!-- Top color bar -->
         <div style="flex-shrink:0;height:3px;background:linear-gradient(90deg,transparent,var(--c),transparent)"></div>
@@ -340,6 +340,7 @@ class Component extends DCLogic {
     noteIndex: 0,
     hintMsg:   '',
     finale:    false,
+    pendingSecret: false,
     muted:     this.loadMuted(),
     showIntro: true,          // always plays on every visit
     milestone: '',
@@ -508,11 +509,11 @@ class Component extends DCLogic {
     try{navigator.vibrate&&navigator.vibrate([10,50,10]);}catch(_){}
     setTimeout(()=>this.burstAt(emo.id), 40);
     if(willBeAll&&!this.state.finale){
-      this.setState({finale:true});
+      this.setState({finale:true, pendingSecret:true});
       setTimeout(()=>{ this.celebrate(); this.playBirthday(); this.burstAt('birthday'); }, 1100);
-      setTimeout(()=>{ this.heartShower(); }, 2400);
       setTimeout(()=>{ this.celebrate(); }, 3700);
-      setTimeout(()=>this.setState({active:'playlist', noteIndex:0}), 1750);
+      const un=emo.notes.filter(n=>unlocked[n.code]); const idx=un.findIndex(n=>n.code===note.code);
+      setTimeout(()=>this.setState({active:emo.id, noteIndex:idx<0?0:idx}), 780);
     } else {
       const un=emo.notes.filter(n=>unlocked[n.code]); const idx=un.findIndex(n=>n.code===note.code);
       setTimeout(()=>this.setState({active:emo.id, noteIndex:idx<0?0:idx}), 780);
@@ -542,10 +543,18 @@ class Component extends DCLogic {
 
   openPlaylist = () => this.setState(s=>({active:'playlist', noteIndex:s.lastNote?.playlist||0}));
   openEgg      = () => this.setState(s=>({active:'egg',      noteIndex:s.lastNote?.egg     ||0}));
-  closeMessage = () => this.setState({active:null,shareOpen:false}, () => {
-    const el=this._lastOrb&&document.querySelector('[data-orb="'+this._lastOrb+'"]');
-    if(el) el.focus();
-  });
+  closeMessage = () => {
+    if(this.state.pendingSecret){
+      this.setState({active:null, shareOpen:false, pendingSecret:false}, () => {
+        setTimeout(()=>{ this.heartShower(); this.setState({active:'egg', noteIndex:0}); }, 700);
+      });
+      return;
+    }
+    this.setState({active:null,shareOpen:false}, () => {
+      const el=this._lastOrb&&document.querySelector('[data-orb="'+this._lastOrb+'"]');
+      if(el) el.focus();
+    });
+  };
 
   onCardTouchStart = (e) => { if(e.touches.length>1){ this._swipeX=null; this._swipeY=null; return; } this._swipeX=e.touches[0].clientX; this._swipeY=e.touches[0].clientY; const s=document.querySelector('.msg-scroll'); this._scrollAtStart=s?s.scrollTop:0; };
   onCardTouchEnd   = (e) => {
