@@ -24,7 +24,6 @@ Object.assign(window.AppMethods, {
         const unlocked = {};
         data.forEach(row => { unlocked[row.code] = new Date(row.unlocked_at).getTime(); });
         const allDone = this.DATA.every(e => (e.notes || []).some(n => unlocked[n.code]));
-        if (allDone && !unlocked['forever']) unlocked['forever'] = true;
         this.save(unlocked);
         this.setState({ unlocked, finale: allDone });
       });

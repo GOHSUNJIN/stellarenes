@@ -499,7 +499,6 @@ class Component extends DCLogic {
       this.setState({unlocked, codeInput:'', hintMsg:''}); if(this.inputEl) this.inputEl.blur(); this.playBirthday(); try{navigator.vibrate&&navigator.vibrate([10,50,10]);}catch(_){} this.heartShower(); setTimeout(()=>this.setState({active:'egg', noteIndex:0}),700); return;
     }
     const willBeAll=this.DATA.every(e=>(e.notes||[]).some(n=>unlocked[n.code]));
-    if(willBeAll&&!unlocked['forever']) unlocked['forever']=Date.now();
     this.save(unlocked);
     this.saveUnlockToSupabase(note.code, emo.id, emo.title);
     const newCount=this.DATA.filter(e=>(e.notes||[]).some(n=>unlocked[n.code])).length;
@@ -513,7 +512,7 @@ class Component extends DCLogic {
       setTimeout(()=>{ this.celebrate(); this.playBirthday(); this.burstAt('birthday'); }, 1100);
       setTimeout(()=>{ this.heartShower(); }, 2400);
       setTimeout(()=>{ this.celebrate(); }, 3700);
-      setTimeout(()=>this.setState({active:'egg', noteIndex:0}), 1750);
+      setTimeout(()=>this.setState({active:'playlist', noteIndex:0}), 1750);
     } else {
       const un=emo.notes.filter(n=>unlocked[n.code]); const idx=un.findIndex(n=>n.code===note.code);
       setTimeout(()=>this.setState({active:emo.id, noteIndex:idx<0?0:idx}), 780);
