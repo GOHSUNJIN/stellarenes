@@ -1,5 +1,5 @@
 // ── Supabase sync ─────────────────────────────────────────────────────────
-// Handles reading and writing unlocks to Supabase, and subscribing
+// Handles reading and writing unlocks to Supabase and subscribing
 // to realtime changes so all devices stay in sync automatically.
 
 window.AppMethods = window.AppMethods || {};

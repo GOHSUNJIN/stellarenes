@@ -8,7 +8,7 @@ A personalised interactive birthday gift — a constellation of 20 stars, each h
 
 - 20 stars float across the sky, one for every feeling
 - Each star is locked until its secret word is typed into the input bar
-- Unlocking a star plays a short tone, bursts particles, and reveals a personal message
+- Unlocking a star plays a short tone, bursts particles and reveals a personal message
 - A hidden **birthday star** at the centre opens with a special code given on the day
 - When the last of the 20 stars is lit, a secret **egg star** appears automatically after she closes it
 - A **playlist star** appears once all 20 are lit — links to a Spotify playlist with a personal note
@@ -39,7 +39,7 @@ Open **`messages.js`** — this is the only file you need to touch.
 Each entry is a code word mapped to a message:
 
 ```js
-kintsugi: `Your heart aches, and I wish I could carry it for you.
+kintsugi: `Your heart aches and I wish I could carry it for you.
 Broken things can be put back with gold in the cracks...`,
 
 queen: `Happy birthday, Renes.
@@ -119,7 +119,7 @@ stellarenes/
 
 ## Supabase setup
 
-Supabase stores every unlock so you can see which words Renes has typed, and lets you undo a star by deleting its row.
+Supabase stores every unlock so you can see which words Renes has typed and lets you undo a star by deleting its row.
 
 ### 1. Create the table
 

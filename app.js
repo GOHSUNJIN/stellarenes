@@ -1,5 +1,5 @@
 // ── Core app logic ─────────────────────────────────────────────────────────
-// Lifecycle, persistence, data helpers, interaction, and render.
+// Lifecycle, persistence, data helpers, interaction and render.
 // Audio  → audio.js  |  Canvas/particles → canvas.js  |  Supabase → sync.js
 
 window.AppMethods = window.AppMethods || {};
@@ -24,7 +24,7 @@ Object.assign(window.AppMethods, {
     clearTimeout(this._idle);
     this._idle = setTimeout(() => {
       if (this.count() === 0 && !this.state.active && !this.state.showIntro)
-        this.setState({ hintMsg: '✦ tap any star to see what it holds, or type a word' });
+        this.setState({ hintMsg: '✦ tap any star to see what it holds or type a word' });
     }, 9000);
   },
 

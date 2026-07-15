@@ -1,5 +1,5 @@
 // ── Canvas & particles ─────────────────────────────────────────────────────
-// Background star field, shooting stars, burst particles, and heart shower.
+// Background star field, shooting stars, burst particles and heart shower.
 
 window.AppMethods = window.AppMethods || {};
 Object.assign(window.AppMethods, {
