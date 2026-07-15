@@ -546,7 +546,7 @@ class Component extends DCLogic {
   closeMessage = () => {
     if(this.state.pendingSecret){
       this.setState({active:null, shareOpen:false, pendingSecret:false}, () => {
-        setTimeout(()=>{ this.heartShower(); this.setState({active:'egg', noteIndex:0}); }, 700);
+        setTimeout(()=>{ this.setState({active:'playlist', noteIndex:0}); }, 700);
       });
       return;
     }
