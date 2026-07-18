@@ -144,17 +144,13 @@ So today, don't try to give any of this back to me. Don't feel like you need to 
 You are loved more than you know, more consistently than you realise and more completely than I think you'll ever give yourself credit for. If one day you forget that, come back to this letter and borrow my certainty for a while, because there has never been a version of you that I have loved any less. There never will be.`,
 
 // When you feel grateful
-luminous: `Gratitude is a funny thing because sometimes we don't realise just how much someone has changed our life until we stop and really think about it. I've done that more times than I can count with you and every single time I come to the same conclusion: meeting you has been one of the greatest things that's ever happened to me.
+luminous: `Gratitude is a funny thing because sometimes we don't realise how much we have until we stop and really think about it. If you're reading this because you're feeling grateful today, I hope you'll spend a moment being grateful for yourself too because I honestly don't think you realise how much good you bring into the lives of the people around you. One of my favourite things about you is how naturally caring you are. You don't do nice things because you're expecting something in return. You do them because that's simply who you are. You remember the little things people tell you, you notice when something feels off even when nobody says anything and you always seem to find quiet ways to make the people you care about feel looked after. I don't even think you realise you're doing it half the time, but it's one of the things I admire most about you.
 
-I don't think you realise how many little things you've done that have stayed with me. You sat through my nerdy interests even when they weren't really your thing, not because you suddenly loved them too, but because you knew they mattered to me. You found the Gengar plush, the Frieren cups, brought me to GastroBeats, watched me try a Dubai chewy cookie for the first time and somehow enjoyed watching my reaction more than eating it yourself. You notice when I'm thirsty before I've said a word, remind me to eat, surprise me with snacks and remember tiny details that I would've forgotten I'd even told you. To anyone else, they might just seem like small gestures, but to me they're reminders that I have someone who pays attention to me in a way I've never experienced before.
+I've been lucky enough to experience that side of you so many times. You sat through all my nerdy interests even though they weren't really your thing because you knew they mattered to me. You found the Gengar plush, the Frieren cups, brought me to GastroBeats, watched me try my first Dubai chewy cookie and somehow enjoyed watching my reaction more than eating it yourself. You notice when I'm thirsty before I've even said anything, remind me to eat, tell me to rest because you know I'll keep working if nobody stops me, surprise me with snacks and somehow remember little details that I'd completely forgotten I'd told you. Then there was the night I was sick. You finished work late and still travelled all the way from Woodlands to Tampines just to make sure I was okay. I told you not to come because I knew how tired you must've been but you came anyway. Moments like these might feel small to you but they've never felt small to me. They've shown me what genuine care looks like and every one of them has stayed with me.
 
-Then there are the things that can't really be wrapped up as memories because they've become part of who I am now. You reassured the insecurities I carried for years, the ones about my height, my past and the version of myself I wasn't proud of and somehow you never made me feel like those things were what defined me. You looked at me with so much kindness that, little by little, I started looking at myself differently too. I don't think you realise how rare that is or how much of a gift you've given me without ever asking for anything in return.
+I also hope you never forget how special you are. I know there are days when you doubt yourself or feel like you're not enough, but I really wish you could see yourself the way I do. I see someone who's kind without expecting recognition, thoughtful without making a big deal out of it, and strong even when she doesn't realise she is. When I told you about my past, I was honestly scared it would change the way you saw me. Instead, you listened, tried to understand me before judging me, and accepted me in a way I never expected. You made me feel safe enough to be completely myself around you, and I don't think you'll ever fully realise how much that changed me. You've helped me become more confident, reminded me to take better care of myself, and made me want to become a better person simply because meeting someone like you made me feel like I could be. Before you, I would've just worked until I was exhausted because I thought that was normal. Now I actually hear your voice in my head telling me to rest, and somehow that alone says so much about the impact you've had on my life.
 
-You've also given me something I've never really had before, which is the feeling of being completely known. You know my past, my flaws, the mistakes I've made, the parts of myself that I used to wish I could hide and you stayed. Not because you ignored those things, but because you saw all of them and still chose to love me anyway. That kind of acceptance changes a person and I know it's changed me. You've made me want to become a better man, not because you asked me to, but because loving you has made me want to become someone who's worthy of the love you've already given me.
-
-So if you're reading this because you're feeling grateful today, I hope you'll let me give you one more thing to be grateful for. Somewhere in the world, there's someone whose life is happier, gentler and fuller because you walked into it. You've changed my life in more ways than I could ever fit into one letter and I don't think there will ever be enough words to thank you for all of them.
-
-Thank you for loving me the way you do. Thank you for seeing me when I struggled to see myself. Thank you for making ordinary days feel special just because you're in them and thank you for being the person who changed my life without ever trying to. I'll always be grateful for everything you've given me, but most of all, I'll always be grateful for you.
+So if you're reading this because you're feeling grateful today, I hope you'll remember that somewhere in the world, there's someone whose life is happier because you walked into it. Someone who smiles more because of you, laughs more because of you, believes in himself more because of you, and looks forward to ordinary days because he gets to spend them with you. I know that because I'm one of those people. Thank you for every café date, every random walk, every heart-to-heart conversation, every hug that actually feels like a hug, every reassurance, every little gift, every time your eyes lit up over good food, and every moment that slowly became one of my favourite memories. More than anything, thank you for being you. I hope that whenever you feel grateful, you'll remember that I'm one of the countless reasons you should be grateful for yourself too.
 `,
 
 // When you feel proud
@@ -335,27 +331,12 @@ Thank you for finding every single one.
 
 I'll always be here.
 
-I also couldn't finish this without making you a playlist.
-
-I don't actually know if you'll like every song on here and honestly that's not really the point. Every single one ended up here for a reason. Some of them reminded me of you the first time I heard them. Some reminded me of a conversation we had, a date we went on or a version of you that I can't stop thinking about. Some of them didn't remind me of you at first, but somewhere along the way they quietly became yours without me even realising it.
-
-There are probably a few songs that won't make sense straight away and that's okay. Don't skip them just because they're confusing. Sometimes I struggle to explain why a song reminds me of you because it isn't the lyrics or the melody or even the meaning. Sometimes it's just a feeling and somehow that feeling became you.
-
-I also spent way too long deciding what order everything should go in. I know it probably looks random, but it isn't. I wanted it to feel like a journey, so if you can, listen to it from start to finish at least once before shuffling it. I think it'll make a little more sense that way.
-
-I hope years from now there'll be songs on here that immediately take you back to us. Maybe you'll hear one in a café, in the car or randomly while you're out somewhere and for a second you'll think about these letters or one of our dates or some tiny moment that neither of us realised would become a memory.
-
-That's kind of my favourite thing about music. It remembers things for us.
-
-So whenever you miss me or you're having a good day, a bad day or you just want a little company, press play.
-
-Hopefully it'll feel a little bit like I'm sitting beside you.
 `,
 
 
 // ── Spotify link ─────────────────────────────────────────────────────────
 //    Paste your playlist URL here (or set to '' to hide the embed)
 
-SPOTIFY: 'https://open.spotify.com/playlist/46s03xVyDrJ32Al2tRjYlL'
+SPOTIFY: ''
 
 };
